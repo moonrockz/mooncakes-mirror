@@ -3,3 +3,4 @@
 {"name": "peter-jerry-ye/parser-combinator", "version": "0.3.0", "deps": {}, "checksum": "9612d359bed4df32985f11be28673e82f2a63cea53fda3be6ab74b4737799e19"}
 {"name": "peter-jerry-ye/parser-combinator", "version": "0.3.1", "deps": {"peter-jerry-ye/assertion": "0.1.1"}, "checksum": "ab5a178f753bd90c178e69934a3f59b3b2e83c9f044c5082828027f543a37189"}
 {"name": "peter-jerry-ye/parser-combinator", "version": "0.3.2", "deps": {"peter-jerry-ye/assertion": "0.2.1"}, "license": "Apache-2.0", "checksum": "29535450cdde7d7d69a37ce9bdafde214577127174a4f78476933144770c06e3"}
+{"name": "peter-jerry-ye/parser-combinator", "version": "0.3.3", "deps": {"peter-jerry-ye/assertion": "0.2.1"}, "license": "Apache-2.0", "checksum": "55616939735011d15f8fb524e985d62a09a8722d8f0cd2ace848d6aa1ea46675"}
