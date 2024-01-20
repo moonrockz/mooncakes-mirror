@@ -1,0 +1,1 @@
+{"name": "fantix/mmhttp", "version": "0.1.0", "deps": {"fantix/muts": "0.4.2"}, "readme": "README.md", "repository": "https://gitee.com/fantix/mmhttp", "license": "MulanPSL-2.0", "keywords": ["http", "parser"], "checksum": "bd62c86a62f169b3daa03f62e0b0a753b501171856e1399031c673121a3c3280"}
