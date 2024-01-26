@@ -8,3 +8,4 @@
 {"name": "peter-jerry-ye/parser-combinator", "version": "0.4.0", "deps": {"peter-jerry-ye/assertion": "0.2.1"}, "license": "Apache-2.0", "checksum": "966b783cd94c05d4915de1a2f253ccae31f075c54954eec97d92a89a6f70d14c"}
 {"name": "peter-jerry-ye/parser-combinator", "version": "0.4.1", "deps": {"peter-jerry-ye/assertion": "0.2.1"}, "license": "Apache-2.0", "checksum": "6f7cac2bce48d242e99d5d0e89f150688522ec24112427aadff0c3b56f9e12d8"}
 {"name": "peter-jerry-ye/parser-combinator", "version": "0.4.2", "deps": {"peter-jerry-ye/assertion": "0.2.1"}, "license": "Apache-2.0", "checksum": "ac0ede7180d9ff254072b9a2ceab822820cd4d8269900327ab506855a5853593"}
+{"name": "peter-jerry-ye/parser-combinator", "version": "0.5.0", "deps": {}, "license": "Apache-2.0", "checksum": "0cc1aa021024df07f8c6eeef941092f4e2b7c52517f2e68c30e6ed8759c9fafb", "created_at": "2024-01-26T08:36:59.922854+00:00"}
