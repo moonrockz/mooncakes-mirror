@@ -1,0 +1,1 @@
+{"name": "peter-jerry-ye/json", "version": "0.1.0", "deps": {"peter-jerry-ye/parser-combinator": "0.5.1", "fantix/muts": "0.4.4"}, "checksum": "0d8ad56a63b55f9cce43a837707bdac2185923d0ff41fd41baf8f7ce72fe60a0", "created_at": "2024-01-26T09:24:21.930279+00:00"}
