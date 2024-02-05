@@ -13,3 +13,4 @@
 {"name": "peter-jerry-ye/wasi", "version": "0.10.0", "deps": {"peter-jerry-ye/memory": "0.1.0"}, "license": "Apache-2.0", "checksum": "63aa40baf2bea39ce89d973aa32beed33d27caf744f03bfe72481bd02b261e60"}
 {"name": "peter-jerry-ye/wasi", "version": "0.10.1", "deps": {"peter-jerry-ye/memory": "0.1.0"}, "license": "Apache-2.0", "checksum": "d22a7564ab1c2c246a99f76f568a67ff0f2c1691d86c5eb31c41a264f370375a"}
 {"name": "peter-jerry-ye/wasi", "version": "0.10.2", "deps": {"peter-jerry-ye/memory": "0.1.0"}, "license": "Apache-2.0", "checksum": "2c3c733b0095b502874879f79fa5eb24215923ad5940d4ef6dea67a27ee460d2"}
+{"name": "peter-jerry-ye/wasi", "version": "0.11.0", "deps": {"peter-jerry-ye/memory": "0.3.0"}, "license": "Apache-2.0", "checksum": "373a62362935fd2c57b0c2cef3b6a1bb34fb1d47cb0c8d37a14ee1d325341226", "created_at": "2024-02-05T08:18:11.741677+00:00"}
