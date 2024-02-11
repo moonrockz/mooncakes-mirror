@@ -8,3 +8,4 @@
 {"name": "fantix/muts", "license": "MulanPSL-2.0", "repository": "https://gitee.com/fantix/muts", "version": "0.4.2", "checksum": "a7f639b5a97c2b733886b624c35a5fe750f35e2393771a5700e324355f48b9d4"}
 {"name": "fantix/muts", "license": "MulanPSL-2.0", "repository": "https://gitee.com/fantix/muts", "version": "0.4.3", "checksum": "5c8cd21b1dea169b4e14f79ddd9e5d514a1725674ef55e427c893d148569b2e4"}
 {"name": "fantix/muts", "license": "MulanPSL-2.0", "repository": "https://gitee.com/fantix/muts", "version": "0.4.4", "checksum": "308e6cc6bf06a607dc2d1b06474e91494e062ff4554810b293455f333141c328", "created_at": "2024-01-23T12:46:35.844019+00:00"}
+{"name": "fantix/muts", "license": "MulanPSL-2.0", "repository": "https://gitee.com/fantix/muts", "version": "0.5.0", "checksum": "75685fe24125ceb8ee8c67760b8bfbcb142285e5d0fe0cb594cd7f0e033f7df5", "created_at": "2024-02-11T19:16:37.266203+00:00"}
