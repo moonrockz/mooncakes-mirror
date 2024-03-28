@@ -1,0 +1,1 @@
+{"name": "Yoorkin/trie", "version": "0.1.1", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": ["data structures", "utils", "trie"], "description": "A simple implementation of a Trie data structure", "checksum": "a8e490352c8a1c2665eae1dd97b5302c1f609097ed694ebc5226edb48398f96b", "created_at": "2024-03-28T08:37:14.731100+00:00"}
