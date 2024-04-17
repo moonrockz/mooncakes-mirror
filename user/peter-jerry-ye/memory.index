@@ -5,3 +5,4 @@
 {"name": "peter-jerry-ye/memory", "version": "0.4.0", "checksum": "9302df1fe585308675a9fc89a4c119372685fd25f5a8f0ad86c61a05ea1ee238", "created_at": "2024-02-26T05:18:56.412255+00:00"}
 {"name": "peter-jerry-ye/memory", "version": "0.5.0", "checksum": "7da10410c8a89b5f5deb002e20bfc6f7c1877372e0e59d12c5881d1832dc27fa", "created_at": "2024-03-15T06:01:03.072387+00:00"}
 {"name": "peter-jerry-ye/memory", "version": "0.6.0", "repository": "https://github.com/peter-jerry-ye/memory", "license": "Apache-2.0", "checksum": "20e1c3b0b20e1b5822718c293cdc7a337fa4c3a6b1ecd0fed7ab4923983ed6ce", "created_at": "2024-03-19T09:08:05.018950+00:00"}
+{"name": "peter-jerry-ye/memory", "version": "0.6.1", "repository": "https://github.com/peter-jerry-ye/memory", "license": "Apache-2.0", "checksum": "4b2686e94cd849d354fb489db890d7e64479ce20c0b149d42e4d63a24f166f19", "created_at": "2024-04-17T03:06:29.800117+00:00"}
