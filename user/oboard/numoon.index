@@ -1,0 +1,1 @@
+{"name": "oboard/numoon", "version": "0.1.0", "deps": {"peter-jerry-ye/wasi": "0.16.1"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "ea5d7ebff48772911a0e4d063a3c3cc1384e320080ac83f3a89ff42832270e75", "created_at": "2024-05-12T08:04:25.144721+00:00"}
