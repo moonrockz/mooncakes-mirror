@@ -1,0 +1,1 @@
+{"name": "oboard/mooncrypto", "version": "0.1.0", "deps": {}, "readme": "README.md", "repository": "https://github.com/oboard/mooncrypto", "license": "MIT", "keywords": ["crypto", "md5", "\u52a0\u5bc6"], "description": "MoonBit Crypto Library", "checksum": "e26d819ca8c27ca55b5a158030a90aac50578b50bc99289a5b845cd9f6c7ed3e", "created_at": "2024-05-14T02:06:26.815710+00:00"}
