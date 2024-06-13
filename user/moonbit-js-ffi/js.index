@@ -1,1 +1,2 @@
 {"name": "moonbit-js-ffi/js", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "9c05fdc328050f95a69b1293173f5c336c171f134f79da193bd059658fd21d93", "created_at": "2024-06-12T15:24:07.069470+00:00"}
+{"name": "moonbit-js-ffi/js", "version": "0.2.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "57eb6497d7bc57db0783a126cc292322d772594448fef4217d45ae0db28264e1", "created_at": "2024-06-13T15:41:51.834985+00:00"}
