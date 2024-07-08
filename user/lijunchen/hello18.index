@@ -28,3 +28,4 @@
 {"name": "lijunchen/hello18", "keywords": ["mooncakes-test"], "license": "MIT OR Apache-2.0", "version": "0.1.27", "checksum": "9db62007eb0f7afc1e3f99dea41088343f2446ae6e540107e07c2f3de7d468b3"}
 {"name": "lijunchen/hello18", "keywords": ["mooncakes-test"], "license": "MIT OR Apache-2.0", "version": "0.1.28", "checksum": "ad3fe93845cd5e6994bf4795a91d1c84744edae067f72b9b96fa4836b2354f43", "created_at": "2024-01-23T07:32:37.097370+00:00"}
 {"name": "lijunchen/hello18", "keywords": ["mooncakes-test"], "license": "MIT OR Apache-2.0", "version": "0.1.29", "checksum": "05ff954452bd30cc9a29b58e3adc0628c0b626678d5312e2e5c321ca45f0293f", "created_at": "2024-05-15T02:11:47.255710+00:00"}
+{"name": "lijunchen/hello18", "keywords": ["mooncakes-test"], "license": "", "version": "0.1.30", "checksum": "5d34509be83066583f7ec2a5c4b5d130926f9f696cde7b89ebbf113a24f5632d", "created_at": "2024-07-08T03:50:44.245334+00:00"}
