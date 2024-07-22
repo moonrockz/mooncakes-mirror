@@ -1,0 +1,1 @@
+{"name": "Lampese/moonbit-chalk", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "MIT", "keywords": ["string", "chalk", "color"], "description": "Terminal string styling support for MoonBit.", "checksum": "cdcab9b507fc6651312a211c54ac8f478af75befeaff005e5afd3f61d78699e9", "created_at": "2024-07-22T07:34:08.809740+00:00"}
