@@ -1,0 +1,1 @@
+{"name": "oboard/mimetype", "version": "0.1.0", "readme": "README.md", "repository": "https://github.com/oboard/mimetype", "license": "Apache-2.0", "keywords": ["mimetype", "mime", "type"], "description": "Mime types for MoonBit", "root-dir": "src", "checksum": "c88e1dd1b7dba10327df419a9feacdb0452ee02e0b9d058212a956a93c0808f3", "created_at": "2024-08-02T18:03:31.057494+00:00"}
