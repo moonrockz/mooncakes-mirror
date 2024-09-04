@@ -1,1 +1,2 @@
 {"name": "tonyfettes/ops", "version": "0.0.1", "checksum": "604455e92d353f5c135587199dac8033f0f67689a2dea2bba485ec5c38b5a9f7"}
+{"name": "tonyfettes/ops", "version": "0.0.2", "deps": {}, "keywords": ["mooncakes-test"], "license": "MIT", "checksum": "6546a2ca03e5b7cfa15ebb19003c4f2bc1f5514e54079c118ddc51e30cb8999a", "created_at": "2024-09-04T02:47:51.112936+00:00"}
