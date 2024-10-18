@@ -1,0 +1,1 @@
+{"name": "tonyfettes/memory", "version": "0.1.1", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "Simple memory access and management to be used with WASI FFI", "source": "src", "checksum": "10699ac022147c0ee1ce9d9b7cdd3350b4a5ce33789b1dfe60bff5d6cf6218f7", "created_at": "2024-10-18T07:13:47.894691+00:00"}
