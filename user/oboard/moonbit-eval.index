@@ -1,0 +1,1 @@
+{"name": "oboard/moonbit-eval", "version": "0.1.0", "readme": "README.md", "repository": "https://github.com/oboard/moonbit-eval", "license": "Apache-2.0", "keywords": ["moonbit", "eval"], "description": "MoonBit Eval Package", "source": "src", "checksum": "19e1282062bbaaa9f2f545962381f780563d0b87e4f9ab2aaa9ff7e570842ee2", "created_at": "2024-11-07T08:35:37.823528+00:00"}
