@@ -1,0 +1,1 @@
+{"name": "CMoonBack/computational-geometry", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": ["math", "geometry"], "description": "computational geometry library in moonbit", "source": "src", "checksum": "d29e44026188a899f3d6f561f8ec93cfdf8bc0ed953bba010d6e81524258c64b", "created_at": "2024-11-27T14:52:31.367380+00:00"}
