@@ -1,0 +1,1 @@
+{"name": "yamajik/dapr", "version": "0.1.1", "deps": {"yamajik/wasi": "0.1.16"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "checksum": "30573c8fe761919c7392d9de61c5c058bbb85d77ba9ea101fc60b3067a582d3a", "created_at": "2024-12-04T07:19:21.042758+00:00"}
