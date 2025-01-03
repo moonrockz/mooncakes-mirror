@@ -1,0 +1,1 @@
+{"name": "Lampese/moondata", "version": "0.1.0", "deps": {"moonbitlang/x": "0.4.16"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "checksum": "65aba9eba91d7c5a16b8a151991883a999f02fc1903ef0b805c2060f960e2151", "created_at": "2025-01-03T08:11:21.715736+00:00"}
