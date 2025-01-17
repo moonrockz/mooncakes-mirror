@@ -1,0 +1,1 @@
+{"name": "shiheat/find_max", "version": "0.3.0", "readme": "README.md", "repository": "https://github.com/shiheat/find-max", "license": "Apache-2.0", "keywords": ["find_max"], "description": "find the maximum value in a list", "source": "src", "checksum": "c8a655ea83a6696919c2f519cc2993ef162d5b4abfa46e6261d33051cb619865", "created_at": "2025-01-17T05:38:08.746793+00:00"}
