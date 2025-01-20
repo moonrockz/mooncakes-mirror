@@ -1,0 +1,1 @@
+{"name": "Erolaffy/easy-io", "version": "0.1.0", "deps": {"moonbitlang/x": "0.4.18"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": ["easy-io"], "description": "", "source": "src", "checksum": "0507c8fcbdc15d5b1855c59b8562a1fa73245c837ae14cdcc31e9af7c337cd75", "created_at": "2025-01-20T08:19:21.115336+00:00"}
