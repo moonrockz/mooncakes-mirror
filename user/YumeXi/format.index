@@ -1,0 +1,1 @@
+{"name": "YumeXi/format", "version": "0.2.2", "readme": "README.md", "repository": "https://github.com/YumeXi/format", "license": "BSD-2-Clause", "keywords": ["format", "utils"], "description": "A formatting library for MoonBit", "source": "src", "checksum": "935ea28ccc6c5390902dd21793b915ba051894b90484ca8c1814f60b517c3e4a", "created_at": "2025-01-26T10:24:11.651040+00:00"}
