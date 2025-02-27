@@ -1,0 +1,1 @@
+{"name": "peter-jerry-ye/async", "version": "0.1.0", "readme": "README.md", "repository": "https://github.com/peter-jerry-ye/async.mbt", "license": "Apache-2.0", "keywords": [], "description": "Promise and Event Loop", "source": "src", "checksum": "1e2d2e70c4f9eeb8b8a657a10053777bbac1a098986037cd9af5b01bf3eb23d0", "created_at": "2025-02-27T09:22:30.933931+00:00"}
