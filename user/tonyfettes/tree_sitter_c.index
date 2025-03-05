@@ -1,1 +1,2 @@
 {"name": "tonyfettes/tree_sitter_c", "version": "0.1.0", "deps": {"tonyfettes/tree_sitter_language": "0.1.0"}, "license": "Apache-2.0", "checksum": "200bbf3f48593d3933044c85e646a5fa9159e1e2bbee57c355c512b364d002b1", "created_at": "2025-03-05T11:45:35.620621+00:00"}
+{"name": "tonyfettes/tree_sitter_c", "version": "0.1.1", "deps": {"tonyfettes/tree_sitter_language": "0.1.1"}, "license": "Apache-2.0", "checksum": "aeeb506b0f6b511e6045503522417a7746ebaf1bb8ef15e21f948cb6cb8d0db1", "created_at": "2025-03-05T23:13:34.720678+00:00"}
