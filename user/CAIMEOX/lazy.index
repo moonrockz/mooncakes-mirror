@@ -1,0 +1,1 @@
+{"name": "CAIMEOX/lazy", "version": "0.1.0", "readme": "README.md", "repository": "https://github.com/CAIMEOX/lazy.git", "license": "Apache-2.0", "keywords": ["lazy"], "description": "Lazy Initialized Value", "source": "src", "checksum": "2cbbc652d4fe1177e62167f40cb67b012459166399d211e385d469390282f39c", "created_at": "2025-03-10T13:28:39.691191+00:00"}
