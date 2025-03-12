@@ -1,0 +1,1 @@
+{"name": "NerdyLee/newcake_ls", "version": "0.1.0", "deps": {"Yoorkin/example/list": "0.1.4"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "checksum": "787fe35cd4765b7dec735737cca38a20cf0890d7bb395f8aad0efd798c18e009", "created_at": "2025-03-12T07:31:01.259894+00:00"}
