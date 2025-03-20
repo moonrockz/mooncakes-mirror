@@ -1,0 +1,1 @@
+{"name": "illusory0x0/prettyprinter", "version": "0.1.0", "deps": {"illusory0x0/immut_deque": "0.2.0"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "checksum": "4c2e9700522d74bd3b9687280cabf75f10bc654f8d727358d7467d2dfaa2b5c0", "created_at": "2025-03-20T01:13:02.659610+00:00"}
