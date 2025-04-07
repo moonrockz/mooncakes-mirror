@@ -1,0 +1,1 @@
+{"name": "kesmeey/IndexSet", "version": "0.1.2", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "Implementing the IndexSet Data Structure Using MoonBit", "source": "src", "checksum": "30ae10271dfe97a1935cfd38b4507691eb50a2d9d6f89866592da36e47dc0eba", "created_at": "2025-04-07T13:51:16.223224+00:00"}
