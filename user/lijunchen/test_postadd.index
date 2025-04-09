@@ -1,0 +1,1 @@
+{"name": "lijunchen/test_postadd", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": ["mooncakes-test"], "description": "", "source": "src", "scripts": {"postadd": "python3 build.py"}, "checksum": "e75721ff570a8686b8b8fe225dabc945226367964c18fb075a530327d6ee3403", "created_at": "2025-04-09T07:46:45.840608+00:00"}
