@@ -1,0 +1,1 @@
+{"name": "lijunchen/test_esp32", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": ["mooncakes-test"], "description": "", "source": "src", "scripts": {"postadd": "python3 build.py"}, "checksum": "adc6c38876bf0c3103d76939cfbd20201699d50411c5333e454e7b37e37c1069", "created_at": "2025-04-10T07:58:10.540547+00:00"}
