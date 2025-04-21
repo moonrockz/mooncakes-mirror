@@ -1,0 +1,1 @@
+{"name": "CAIMEOX/diet", "version": "0.1.0", "readme": "README.md", "repository": "https://github.com/caimeox/diet", "license": "Apache-2.0", "keywords": ["diet", "data-structure"], "description": "Discrete Interval Encoding Trees", "source": "src", "checksum": "fa92a4223e028b5401e18b7da3d14a234f9f7c6f227a1ad85b2a614b907c1b18", "created_at": "2025-04-21T08:38:31.581154+00:00"}
