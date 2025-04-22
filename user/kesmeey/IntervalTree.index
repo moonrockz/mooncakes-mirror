@@ -1,0 +1,1 @@
+{"name": "kesmeey/IntervalTree", "version": "0.1.1", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": ["IntervalTree", "tree", "Data Structure"], "description": "Implement IntervalTree using Moonbit", "source": "src", "checksum": "c0b3a3a0310fd55f9fd392ec58615a05ce765f6b293ed550eaf65ced5d649d14", "created_at": "2025-04-22T10:11:24.738818+00:00"}
