@@ -1,0 +1,1 @@
+{"name": "0Ayachi0/SwissTable", "version": "0.1.0", "description": "High performance implementation of SwissTable hash table", "license": "Apache-2.0", "source": "src", "dependencies": "", "authors": ["0Ayachi0"], "repository": "", "checksum": "439c38895c9945fe9d22801950c5c869d6ad4e2a03566ea0b6b93a10863f7b92", "created_at": "2025-04-22T16:09:03.176218+00:00"}
