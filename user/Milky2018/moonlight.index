@@ -1,0 +1,1 @@
+{"name": "Milky2018/moonlight", "version": "0.1.0", "deps": {"Milky2018/options": "0.1.2", "Milky2018/moonchor": "0.10.0"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "checksum": "d5f1ec05ead321f1b0439ac4aa02b24c2d79d6c32c77f654d4280ed6994600da", "created_at": "2025-05-13T07:11:58.243950+00:00"}
