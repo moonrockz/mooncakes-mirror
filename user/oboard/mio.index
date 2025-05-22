@@ -1,0 +1,1 @@
+{"name": "oboard/mio", "version": "0.1.0", "deps": {"moonbitlang/x": "0.4.27"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "checksum": "9311516fc96064540da05656dde2148eea5048b9fccecfa3aba126ed474cb983", "created_at": "2025-05-22T15:19:35.421750+00:00"}
