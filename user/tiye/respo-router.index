@@ -1,0 +1,1 @@
+{"name": "tiye/respo-router", "version": "0.0.1", "deps": {"tiye/respo": "0.0.34", "tiye/dom-ffi": "0.0.9"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "checksum": "ff4e842add1ed2b068f4f7baf83695dc792e3c5ca6866e3058d5c2a87d303bd2", "created_at": "2025-06-01T17:05:13.259194+00:00"}
