@@ -1,0 +1,1 @@
+{"name": "BigOrangeQWQ/wasi-io", "version": "0.2.6", "license": "Apache-2.0", "source": "src", "deps": {"BigOrangeQWQ/wit-ffi": "0.1.0"}, "checksum": "44b01cdc6e215cb60b9941b262748d3a5c04cd9fc330ce4e741ea612b2857787", "created_at": "2025-06-21T16:56:01.995777+00:00"}
