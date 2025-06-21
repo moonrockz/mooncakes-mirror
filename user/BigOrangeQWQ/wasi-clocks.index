@@ -1,0 +1,1 @@
+{"name": "BigOrangeQWQ/wasi-clocks", "version": "0.2.6", "license": "Apache-2.0", "source": "src", "deps": {"BigOrangeQWQ/wasi-io": "0.2.6", "BigOrangeQWQ/wit-ffi": "0.1.0"}, "checksum": "b2a33e2e94894c43e8f4200903943d95edd9c8e08572b2df306a2b93b4122511", "created_at": "2025-06-21T16:56:28.605205+00:00"}
