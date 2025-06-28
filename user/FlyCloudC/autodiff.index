@@ -1,0 +1,1 @@
+{"name": "FlyCloudC/autodiff", "version": "0.1.0", "readme": "README.md", "repository": "https://github.com/FlyCloudC/autodiff", "license": "MIT", "keywords": ["autodiff"], "description": "tape-based automatic differentiation", "source": "src", "checksum": "d11d6dc13d4ac323c2263864ef80722c4440305f77982201fd5bc659296bdc5d", "created_at": "2025-06-28T10:08:45.446437+00:00"}
