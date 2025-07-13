@@ -1,0 +1,1 @@
+{"name": "yatsuna827/pk-rng-gen3", "version": "0.1.0", "deps": {"yatsuna827/pk-rng-lcg32": "0.1.0"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "checksum": "a8732284c2060e5a05cd071f520a28c0940766fa127671abc2ea3a2f7aeeb994", "created_at": "2025-07-13T10:13:55.114976+00:00"}
