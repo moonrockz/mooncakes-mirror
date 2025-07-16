@@ -1,0 +1,1 @@
+{"name": "BigOrangeQWQ/uri", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": ["uri", "parser", "http"], "description": "URI parser for Moonbit", "source": "src", "checksum": "988cee7aea4244d2b9e995b33d8b4ad64570e7078d70aaf0c38e30da60ccbd80", "created_at": "2025-07-16T08:34:44.377248+00:00"}
