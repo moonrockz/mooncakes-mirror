@@ -1,0 +1,1 @@
+{"name": "bob/toml", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": ["toml", "parser", "config"], "description": "A TOML parser implementation in MoonBit", "source": "src", "checksum": "ce07600864db30ca176120d712d952bd621094ef1220513dfe428c19460d73b6", "created_at": "2025-08-01T09:19:09.691871+00:00"}
