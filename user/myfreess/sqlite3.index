@@ -1,0 +1,1 @@
+{"name": "myfreess/sqlite3", "version": "0.1.0", "deps": {"tonyfettes/encoding": "0.3.6"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "preferred-target": "native", "checksum": "cb9578b0adf6d8d4eab0d2265046e6a91f781b55856e333d06b09026ce32d9d3", "created_at": "2025-08-08T09:43:50.875373+00:00"}
