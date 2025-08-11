@@ -1,0 +1,1 @@
+{"name": "tonyfettes/uri", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "exclude": ["rfc3986.txt", ".vscode", ".moonagent", ".claude", ".env"], "checksum": "bb30fb440fee5f2f183d808f9b6ce974345bd969011316c6053d2796a43637e5", "created_at": "2025-08-11T09:25:04.366419+00:00"}
