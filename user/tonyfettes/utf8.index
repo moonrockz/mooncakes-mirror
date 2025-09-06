@@ -1,1 +1,2 @@
 {"name": "tonyfettes/utf8", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "ee10eb59d782315093eb825b81fcbd4bfb15b5e3d63a0a17274488431c3de0f6", "created_at": "2025-09-06T07:15:55.276481+00:00"}
+{"name": "tonyfettes/utf8", "version": "0.1.1", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "exclude": [".vscode"], "checksum": "847238b6e85d4c5bfc24b3cee0bab14b5ddb61d8126034926a75dda4b46bc3d7", "created_at": "2025-09-06T07:31:34.039890+00:00"}
