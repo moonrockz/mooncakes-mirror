@@ -1,0 +1,1 @@
+{"name": "hackwaly/pem", "version": "0.1.0", "description": "PEM (Privacy-Enhanced Mail) encoding and decoding library for MoonBit", "keywords": ["pem", "encoding", "decoding", "base64", "crypto"], "license": "MIT", "repository": "", "deps": {}, "checksum": "9bb4ce988fb74f2c710ee4b74efc5d7670f1ef2723a1598e9e0b9a751163dc7d", "created_at": "2025-09-11T08:18:55.952481+00:00"}
