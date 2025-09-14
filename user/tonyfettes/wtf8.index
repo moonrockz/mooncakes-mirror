@@ -1,0 +1,1 @@
+{"name": "tonyfettes/wtf8", "version": "0.1.0", "deps": {"tonyfettes/unicode": "0.1.0", "tonyfettes/utf8": "0.2.0"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "132d463c3b72e93e29bf838eed47c21f4f3784fc8d86f10e0ca4df0ce09529af", "created_at": "2025-09-14T07:44:41.122735+00:00"}
