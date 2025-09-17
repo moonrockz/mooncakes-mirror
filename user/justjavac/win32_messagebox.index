@@ -1,0 +1,1 @@
+{"name": "justjavac/win32_messagebox", "version": "0.1.1", "deps": {"justjavac/ffi": "0.1.11"}, "readme": "README.md", "repository": "", "license": "MIT", "keywords": [], "description": "", "source": "src", "checksum": "2b0c4eb0ec50117f287df7bf21a93d61dceb01d07c303a7c9820b5f9f70ae468", "created_at": "2025-09-17T12:06:00.498493+00:00"}
