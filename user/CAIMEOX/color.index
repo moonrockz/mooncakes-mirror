@@ -1,0 +1,1 @@
+{"name": "CAIMEOX/color", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": ["color", "color-conversion", "color-space"], "description": "A library for color space conversions in MoonBit", "checksum": "560dbd76584c6b9a24c74ffa6a00f39a631d8cfb5404cca67db68023468ef732", "created_at": "2025-09-30T06:53:42.018166+00:00"}
