@@ -1,0 +1,1 @@
+{"name": "ZSeanYves/moonjinja", "version": "0.1.0", "deps": {"moonbitlang/x": "0.4.35"}, "readme": "README.md", "repository": "https://github.com/ZSeanYves/moonjinja.git", "license": "Apache-2.0", "keywords": [], "description": "", "source": "src", "checksum": "16827a9c26b87e85cf9d393bd4a9761b753131781ef5fd2df5034752e3250613", "created_at": "2025-10-27T09:40:10.528719+00:00"}
