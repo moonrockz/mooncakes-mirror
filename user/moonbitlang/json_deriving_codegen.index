@@ -1,0 +1,1 @@
+{"name": "moonbitlang/json_deriving_codegen", "version": "0.0.2", "deps": {"moonbitlang/formatter": "0.1.1", "moonbitlang/parser": "0.1.11"}, "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "99ff8a9a215e639b4eb227709f1f93a2db6755f22ed849b8f5a413d6d97cc54e", "created_at": "2025-11-06T05:47:35.118641+00:00"}
