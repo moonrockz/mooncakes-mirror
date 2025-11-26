@@ -1,0 +1,1 @@
+{"name": "moonbit-community/yaml", "version": "0.0.1", "deps": {"moonbitlang/x": "0.4.37"}, "readme": "README.md", "repository": "https://github.com/moonbit-community/yaml.mbt", "license": "MIT", "keywords": [], "description": "", "source": "src", "checksum": "61ef8cca03c27195c1e52238b78d64633df88b21541d940904f2be5cdee8ded6", "created_at": "2025-11-26T07:43:36.097163+00:00"}
