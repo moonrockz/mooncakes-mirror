@@ -1,0 +1,1 @@
+{"name": "tonyfettes/any", "version": "0.1.0", "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "preferred-target": "native", "exclude": [".vscode", ".github"], "checksum": "ec40f605d8edded62c7539434a749e99c865689c8c6ff881f633c2c14b1bb1a9", "created_at": "2025-11-30T16:02:44.918543+00:00"}
