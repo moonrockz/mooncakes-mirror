@@ -1,0 +1,1 @@
+{"name": "tonyfettes/moonbit", "version": "0.1.0", "deps": {"tonyfettes/c": "0.6.3"}, "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "preferred-target": "native", "checksum": "86eee4af5a056605f65266966f0b07e11dd45fab94c56e629a7eed0a69dec1cd", "created_at": "2025-12-09T17:21:03.981600+00:00"}
