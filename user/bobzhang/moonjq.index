@@ -1,0 +1,1 @@
+{"name": "bobzhang/moonjq", "version": "0.1.0", "repository": "git@github.com:moonbit-community/moobit-jq.git", "keywords": ["jq", "json", "query"], "description": "A jq implementation in MoonBit", "license": "Apache-2.0", "checksum": "c6226fff52863f3532664451d43f6d2d5fa5578276ec5f16576305b98969b6ff", "created_at": "2025-12-14T10:10:13.226345+00:00"}
