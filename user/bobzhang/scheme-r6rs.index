@@ -1,0 +1,1 @@
+{"name": "bobzhang/scheme-r6rs", "version": "0.1.0", "source": ".", "description": "R6RS Scheme interpreter in MoonBit", "readme": "README.mbt.md", "repository": "https://github.com/bobzhang/moonbit-scheme-r6rs", "license": "MIT", "deps": {}, "checksum": "13ac000ba3522e273f6be6fde83700d2d59bad9b7d4d6afc064a51a6e6c19fa6", "created_at": "2026-01-05T11:56:06.887005+00:00"}
