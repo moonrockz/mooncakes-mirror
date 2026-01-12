@@ -1,0 +1,1 @@
+{"name": "angela/srt", "version": "0.0.1", "deps": {"moonbitlang/x": "0.4.38", "Kaida-Amethyst/math": "0.1.20"}, "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "7f7c0e83aca097a10a1971bb3f8d6fed189e6006716df98d6e39316bb3d82a92", "created_at": "2026-01-12T04:08:34.110435+00:00"}
