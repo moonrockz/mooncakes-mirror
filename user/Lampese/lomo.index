@@ -1,1 +1,2 @@
 {"name": "Lampese/lomo", "version": "0.0.1", "license": "MIT", "deps": {"moonbitlang/async": "0.16.1"}, "checksum": "847f2b6976fa3c0ac303c54547f073d6989ee382d5a87cc11179ee064913336d", "created_at": "2026-01-19T02:25:12.024927+00:00"}
+{"name": "Lampese/lomo", "version": "0.0.2", "license": "MIT", "deps": {"moonbitlang/async": "0.16.1"}, "checksum": "3e53dd6106ed2ae84ceab582e6e0e9363380f0fc3c309d13f09aabb7cb1424b7", "created_at": "2026-01-19T03:13:43.834140+00:00"}
