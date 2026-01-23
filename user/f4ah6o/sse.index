@@ -1,0 +1,1 @@
+{"name": "f4ah6o/sse", "version": "0.1.0", "deps": {"mizchi/js": "0.10.10"}, "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "Server-Sent Events (SSE) support for MoonBit/JS", "preferred-target": "js", "checksum": "7aa8c46203f5401a01fe0ddc0cae36f258ba3de9b8914af8d8211085240758c7", "created_at": "2026-01-23T06:55:45.411481+00:00"}
