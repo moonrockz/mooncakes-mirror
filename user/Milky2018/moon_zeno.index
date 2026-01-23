@@ -1,0 +1,1 @@
+{"name": "Milky2018/moon_zeno", "version": "0.1.0", "readme": "README.mbt.md", "repository": "https://github.com/Milky2018/moon_zeno.git", "license": "Apache-2.0", "keywords": [], "description": "A low level 2D rasterization library", "source": "src", "checksum": "1a955f6c08c93f791ab9b7d728179d10e956b63ea3a1d40c49b31c2124449bea", "created_at": "2026-01-23T07:49:18.618069+00:00"}
