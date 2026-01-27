@@ -1,0 +1,1 @@
+{"name": "CAIMEOX/moon_egg", "version": "0.1.0", "source": "src", "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": ["egraphs", "rewrite-system"], "description": "E-graph implementation in MoonBit", "checksum": "32c1e9c118f71019035aeddb4189f19ccd73f3edc1ada2d2a464373957a9f091", "created_at": "2026-01-27T10:10:30.804968+00:00"}
