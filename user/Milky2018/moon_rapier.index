@@ -1,0 +1,1 @@
+{"name": "Milky2018/moon_rapier", "version": "0.1.1", "readme": "README.md", "repository": "https://github.com/moonbit-community/moon_rapier", "license": "Apache-2.0", "keywords": [], "description": "2D physics library for mgstudio (Rapier-aligned).", "checksum": "74424ff8ff191d3fb3f3adccf74373b2fd5275e359fa2e9b39528fb908cf6331", "created_at": "2026-01-29T05:06:45.539723+00:00"}
