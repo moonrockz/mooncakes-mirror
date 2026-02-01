@@ -1,1 +1,2 @@
 {"name": "Lampese/mitest", "version": "0.1.0", "readme": "README.mbt.md", "source": "cmd", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "42d8769aa9846e77b6044d023c95ce378e7d9075365e4a81beb418f0451a7a34", "created_at": "2026-02-01T19:22:50.070981+00:00"}
+{"name": "Lampese/mitest", "version": "0.1.1", "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "e07b0a3e2458e61b9e456be6253dc7450d732aebde531671207933bd55a45ae6", "created_at": "2026-02-01T19:31:57.901934+00:00"}
