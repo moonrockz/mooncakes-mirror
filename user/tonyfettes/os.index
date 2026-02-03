@@ -1,0 +1,1 @@
+{"name": "tonyfettes/os", "version": "0.1.0", "deps": {"tonyfettes/c": "0.7.4"}, "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "preferred-target": "native", "checksum": "a4fa499c283b7c2da7c9c8dbf762b3a07b9081f9ad60c49248ab1e6cbfa7f5c3", "created_at": "2026-02-03T10:38:21.637281+00:00"}
