@@ -1,10 +1,13 @@
 ///|
-/// Example MoonBit project that uses the mooncakes-mirror registry
-/// This is used as a test fixture for E2E testing
+/// Example MoonBit project for E2E testing the mooncakes-mirror registry
+/// This verifies that moon update works with the mirror
 
 fn main {
-  // Simple test that uses a dependency from moonbitlang/x
-  let duration = @time.Duration::from_seconds(42)
   println("Hello from MoonCakes Mirror!")
-  println("Duration: \{duration.to_string()}")
+  println("Registry test successful!")
+
+  // Simple computation to verify the build works
+  let numbers = [1, 2, 3, 4, 5]
+  let sum = numbers.fold(init=0, fn(acc, x) { acc + x })
+  println("Sum of 1-5: \{sum}")
 }

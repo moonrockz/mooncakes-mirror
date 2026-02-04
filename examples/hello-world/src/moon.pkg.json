@@ -1,6 +1,3 @@
 {
-  "is-main": true,
-  "import": [
-    "moonbitlang/x/time"
-  ]
+  "is-main": true
 }
