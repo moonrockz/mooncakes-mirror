@@ -72,6 +72,15 @@
       color: #999;
       font-style: italic;
     }
+    .sync-delta {
+      font-size: 0.5em;
+      color: #28a745;
+      display: block;
+      margin-top: 4px;
+    }
+    .sync-delta.zero {
+      color: #999;
+    }
   </style>
 </head>
 <body>
@@ -85,11 +94,13 @@
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-value" id="package-count"><span class="loading">...</span></div>
-        <div class="stat-label">Packages</div>
+        <div class="stat-label">Total Packages</div>
+        <span class="sync-delta" id="package-delta"></span>
       </div>
       <div class="stat-card">
         <div class="stat-value" id="owner-count"><span class="loading">...</span></div>
-        <div class="stat-label">Publishers</div>
+        <div class="stat-label">Total Publishers</div>
+        <span class="sync-delta" id="owner-delta"></span>
       </div>
     </div>
 
@@ -133,8 +144,30 @@ moon build</code></pre>
         if (!response.ok) throw new Error('Stats not available');
         const stats = await response.json();
 
-        document.getElementById('package-count').textContent = stats.packageCount || 0;
-        document.getElementById('owner-count').textContent = stats.ownerCount || 0;
+        // Display totals (support both old and new field names)
+        document.getElementById('package-count').textContent = stats.totalPackages ?? stats.packageCount ?? 0;
+        document.getElementById('owner-count').textContent = stats.totalOwners ?? stats.ownerCount ?? 0;
+
+        // Display sync deltas
+        const pkgDelta = stats.lastSyncPackages ?? 0;
+        const ownerDelta = stats.lastSyncOwners ?? 0;
+
+        const pkgDeltaEl = document.getElementById('package-delta');
+        const ownerDeltaEl = document.getElementById('owner-delta');
+
+        if (pkgDelta > 0) {
+          pkgDeltaEl.textContent = `+${pkgDelta} last sync`;
+        } else {
+          pkgDeltaEl.textContent = 'no change last sync';
+          pkgDeltaEl.classList.add('zero');
+        }
+
+        if (ownerDelta > 0) {
+          ownerDeltaEl.textContent = `+${ownerDelta} last sync`;
+        } else {
+          ownerDeltaEl.textContent = 'no change last sync';
+          ownerDeltaEl.classList.add('zero');
+        }
 
         if (stats.lastSync) {
           const syncDate = new Date(stats.lastSync);

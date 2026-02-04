@@ -60,7 +60,22 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      
+
+      - name: Capture pre-sync counts
+        id: pre-sync
+        run: |
+          PACKAGE_COUNT=0
+          OWNER_COUNT=0
+          if [ -d "data/index" ]; then
+            cd data/index
+            OWNER_COUNT=$(find . -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+            PACKAGE_COUNT=$(find . -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l)
+            cd ../..
+          fi
+          echo "packages=$PACKAGE_COUNT" >> $GITHUB_OUTPUT
+          echo "owners=$OWNER_COUNT" >> $GITHUB_OUTPUT
+          echo "Pre-sync: $PACKAGE_COUNT packages, $OWNER_COUNT owners"
+
       - name: Mirror packages (Full)
         if: ${{ github.event.inputs.full_mirror == 'true' }}
         run: |
@@ -88,38 +103,41 @@ jobs:
       - name: Generate registry statistics
         run: |
           LAST_SYNC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          PACKAGE_COUNT=0
-          OWNER_COUNT=0
+          TOTAL_PACKAGES=0
+          TOTAL_OWNERS=0
 
-          # Count packages and owners in the index
+          # Count total packages and owners in the index
           if [ -d "data/index" ]; then
             cd data/index
-            # Count owners (directories at depth 1)
-            OWNER_COUNT=$(find . -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-            # Count packages (directories at depth 2)
-            PACKAGE_COUNT=$(find . -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l)
+            TOTAL_OWNERS=$(find . -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+            TOTAL_PACKAGES=$(find . -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l)
             cd ../..
           fi
 
+          # Calculate sync deltas
+          PRE_PACKAGES=${{ steps.pre-sync.outputs.packages }}
+          PRE_OWNERS=${{ steps.pre-sync.outputs.owners }}
+          SYNC_PACKAGES=$((TOTAL_PACKAGES - PRE_PACKAGES))
+          SYNC_OWNERS=$((TOTAL_OWNERS - PRE_OWNERS))
+
           # Generate JSON stats file
-          cat > data/stats.json << 'STATSEOF'
+          cat > data/stats.json << STATSEOF
           {
-            "lastSync": "LAST_SYNC_PLACEHOLDER",
-            "packageCount": PACKAGE_COUNT_PLACEHOLDER,
-            "ownerCount": OWNER_COUNT_PLACEHOLDER,
+            "lastSync": "$LAST_SYNC",
+            "totalPackages": $TOTAL_PACKAGES,
+            "totalOwners": $TOTAL_OWNERS,
+            "lastSyncPackages": $SYNC_PACKAGES,
+            "lastSyncOwners": $SYNC_OWNERS,
             "source": "mooncakes.io",
             "mirrorUrl": "https://moonrockz.github.io/mooncakes-mirror"
           }
           STATSEOF
 
-          # Replace placeholders with actual values
-          sed -i "s/LAST_SYNC_PLACEHOLDER/$LAST_SYNC/" data/stats.json
-          sed -i "s/PACKAGE_COUNT_PLACEHOLDER/$PACKAGE_COUNT/" data/stats.json
-          sed -i "s/OWNER_COUNT_PLACEHOLDER/$OWNER_COUNT/" data/stats.json
-
           # Pretty print for logs
           echo "Registry Statistics:"
           cat data/stats.json
+          echo ""
+          echo "This sync added $SYNC_PACKAGES packages and $SYNC_OWNERS publishers"
 
       - name: Commit and push all updates
         run: |
