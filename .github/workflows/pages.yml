@@ -1,0 +1,66 @@
+name: Deploy Registry to GitHub Pages
+
+on:
+  # Run after mirror workflow completes
+  workflow_run:
+    workflows: ["Mirror Mooncakes Registry"]
+    types:
+      - completed
+  
+  # Also allow manual trigger
+  workflow_dispatch:
+
+# Allow only one deployment at a time
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Only deploy if mirror workflow succeeded or on manual trigger
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Create pages directory structure
+        run: |
+          mkdir -p _site/git
+
+          # Copy the index repository for Git HTTP protocol
+          if [ -d "data/index" ]; then
+            cp -r data/index _site/git/index
+
+            # Enable Git dumb HTTP protocol
+            cd _site/git/index
+            git update-server-info
+            cd ../../..
+          fi
+
+          # Copy the index page
+          cp index.html _site/index.html
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
