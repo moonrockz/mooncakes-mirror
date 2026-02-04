@@ -98,7 +98,7 @@ jobs:
         if: ${{ github.event.inputs.full_mirror != 'true' && github.event.inputs.pattern == '' && github.event_name == 'workflow_dispatch' }}
         run: |
           echo "Mirroring moonbitlang packages..."
-          moonbit-registry mirror "moonbitlang/*"
+          moonbit-registry mirror "moonbitlang/*" --verbose
       
       - name: Generate registry statistics
         run: |
