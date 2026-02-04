@@ -1,14 +1,18 @@
 # MoonCakes Mirror - Registry Index
 
-This directory contains the Git-based package index for the mooncakes mirror registry.
+**Note:** The actual registry index data is stored on the `registry` branch, not on `main`.
 
-The index is automatically synchronized from mooncakes.io by GitHub Actions workflows.
+## Architecture
 
-## Structure
+- **`main` branch**: Contains source code (MoonBit site, workflows)
+- **`registry` branch**: Contains the synced registry index and stats
 
-- Each package has an entry in the index
-- Package metadata is stored in Git commits
-- The index follows the MoonBit registry index format
+## How It Works
+
+1. The `mirror.yml` workflow clones the mooncakes.io index
+2. It generates stats and pushes everything to the `registry` branch
+3. The `pages.yml` workflow combines the built site from `main` with data from `registry`
+4. GitHub Pages serves the combined result
 
 ## Synchronization
 

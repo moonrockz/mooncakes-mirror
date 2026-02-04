@@ -4,19 +4,15 @@ on:
   # Run daily at 2 AM UTC
   schedule:
     - cron: '0 2 * * *'
-  
+
   # Allow manual trigger
   workflow_dispatch:
     inputs:
-      pattern:
-        description: 'Package pattern to mirror (e.g., "moonbitlang/*" or leave empty for full mirror)'
-        required: false
-        default: ''
       full_mirror:
         description: 'Perform a full mirror of all packages'
         type: boolean
         required: false
-        default: false
+        default: true
 
 # Allow only one mirror operation at a time
 concurrency:
@@ -25,125 +21,63 @@ concurrency:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
-    
+    timeout-minutes: 30
+
     steps:
-      - name: Checkout repository
+      - name: Checkout main branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      
-      - name: Setup mise
-        uses: jdx/mise-action@v2
-        with:
-          install: true
-      
-      - name: Install moonbit-registry-tools
-        run: mise use -g "github:moonrockz/moonbit-registry-tools@latest"
-      
-      - name: Verify moonbit-registry installation
-        run: moonbit-registry --version || moonbit-registry -v || echo "Version command not available"
-      
-      - name: Initialize registry (if needed)
-        run: |
-          if [ ! -d "data/index" ]; then
-            moonbit-registry init --name mooncakes-mirror
-          fi
-      
-      - name: Configure Git for index updates
+          ref: main
+          path: main
+
+      - name: Configure Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Capture pre-sync counts
-        id: pre-sync
+      - name: Clone mooncakes.io index
         run: |
-          PACKAGE_COUNT=0
-          OWNER_COUNT=0
-          # Count from the source index (mooncakes submodule)
-          SOURCE_INDEX="data/index/sources/mooncakes/user"
-          if [ -d "$SOURCE_INDEX" ]; then
-            OWNER_COUNT=$(find "$SOURCE_INDEX" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-            PACKAGE_COUNT=$(find "$SOURCE_INDEX" -name "*.index" -type f 2>/dev/null | wc -l)
+          echo "Cloning mooncakes.io index repository..."
+          git clone --depth 1 https://mooncakes.io/git/index mooncakes-index
+          echo "Index cloned successfully"
+
+          # Show some stats
+          echo "=== Index contents ==="
+          ls -la mooncakes-index/
+          if [ -d "mooncakes-index/user" ]; then
+            OWNER_COUNT=$(find mooncakes-index/user -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+            PACKAGE_COUNT=$(find mooncakes-index/user -name "*.index" -type f 2>/dev/null | wc -l)
+            echo "Found $PACKAGE_COUNT packages from $OWNER_COUNT publishers"
           fi
-          echo "packages=$PACKAGE_COUNT" >> $GITHUB_OUTPUT
-          echo "owners=$OWNER_COUNT" >> $GITHUB_OUTPUT
-          echo "Pre-sync: $PACKAGE_COUNT packages, $OWNER_COUNT owners"
 
-      - name: Mirror packages (Full)
-        if: ${{ github.event.inputs.full_mirror == 'true' }}
-        run: |
-          echo "Performing full mirror of mooncakes registry..."
-          moonbit-registry mirror --full
-
-      - name: Mirror packages (Pattern)
-        if: ${{ github.event.inputs.full_mirror != 'true' && github.event.inputs.pattern != '' }}
-        run: |
-          echo "Mirroring packages matching pattern: ${{ github.event.inputs.pattern }}"
-          moonbit-registry mirror "${{ github.event.inputs.pattern }}"
-
-      - name: Mirror packages (Default - moonbitlang on schedule)
-        if: ${{ github.event_name == 'schedule' }}
-        run: |
-          echo "Mirroring moonbitlang packages (scheduled run)..."
-          moonbit-registry mirror "moonbitlang/*"
-
-      - name: Debug - Check source index contents
-        run: |
-          echo "=== Checking source index ==="
-          ls -la data/index/sources/mooncakes/ 2>/dev/null || echo "Directory does not exist"
-          echo "=== Checking for user directory ==="
-          ls -la data/index/sources/mooncakes/user/ 2>/dev/null || echo "user/ does not exist"
-          echo "=== Git status in source index ==="
-          cd data/index/sources/mooncakes && git status && git log --oneline -3 && cd ../../../..
-
-      - name: Mirror packages (Default - moonbitlang on manual trigger)
-        if: ${{ github.event.inputs.full_mirror != 'true' && github.event.inputs.pattern == '' && github.event_name == 'workflow_dispatch' }}
-        run: |
-          echo "Mirroring moonbitlang packages..."
-          moonbit-registry mirror "moonbitlang/*" --verbose
-      
-      - name: Generate registry statistics
+      - name: Generate statistics
+        id: stats
         run: |
           LAST_SYNC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           TOTAL_PACKAGES=0
           TOTAL_OWNERS=0
           YANKED_COUNT=0
 
-          # Count total packages and owners from the source index (mooncakes submodule)
-          SOURCE_INDEX="data/index/sources/mooncakes/user"
+          SOURCE_INDEX="mooncakes-index/user"
           if [ -d "$SOURCE_INDEX" ]; then
             TOTAL_OWNERS=$(find "$SOURCE_INDEX" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
             TOTAL_PACKAGES=$(find "$SOURCE_INDEX" -name "*.index" -type f 2>/dev/null | wc -l)
           fi
-
-          # Calculate sync deltas
-          PRE_PACKAGES=${{ steps.pre-sync.outputs.packages }}
-          PRE_OWNERS=${{ steps.pre-sync.outputs.owners }}
-          SYNC_PACKAGES=$((TOTAL_PACKAGES - PRE_PACKAGES))
-          SYNC_OWNERS=$((TOTAL_OWNERS - PRE_OWNERS))
 
           # Count yanked/deprecated packages and generate yanked.json
           echo "Scanning for yanked/deprecated packages..."
           YANKED_JSON='{"yankedPackages":['
           FIRST=true
 
-          # Find all .index files in the source index
-          SOURCE_INDEX="data/index/sources/mooncakes/user"
           if [ -d "$SOURCE_INDEX" ]; then
             while IFS= read -r index_file; do
-              # Parse each line of the JSONL file for yanked or deprecated entries
               while IFS= read -r line; do
-                # Check for yanked: true OR deprecated field (which contains a message string)
                 if echo "$line" | grep -qE '"yanked"[[:space:]]*:[[:space:]]*true|"deprecated"[[:space:]]*:'; then
                   YANKED_COUNT=$((YANKED_COUNT + 1))
-                  # Extract name and version
                   PKG_NAME=$(echo "$line" | grep -oP '"name"[[:space:]]*:[[:space:]]*"\K[^"]+' || echo "")
                   PKG_VERSION=$(echo "$line" | grep -oP '"version"[[:space:]]*:[[:space:]]*"\K[^"]+' || echo "")
                   PKG_REASON=$(echo "$line" | grep -oP '"deprecated"[[:space:]]*:[[:space:]]*"\K[^"]+' || echo "yanked")
@@ -153,7 +87,6 @@ jobs:
                     else
                       YANKED_JSON="$YANKED_JSON,"
                     fi
-                    # Escape the reason for JSON
                     PKG_REASON_ESCAPED=$(echo "$PKG_REASON" | sed 's/"/\\"/g')
                     YANKED_JSON="$YANKED_JSON{\"name\":\"$PKG_NAME\",\"version\":\"$PKG_VERSION\",\"reason\":\"$PKG_REASON_ESCAPED\"}"
                   fi
@@ -163,36 +96,68 @@ jobs:
           fi
 
           YANKED_JSON="$YANKED_JSON],\"count\":$YANKED_COUNT,\"generatedAt\":\"$LAST_SYNC\"}"
-          echo "$YANKED_JSON" | jq '.' > data/yanked.json 2>/dev/null || echo "$YANKED_JSON" > data/yanked.json
+          mkdir -p registry-data
+          echo "$YANKED_JSON" | jq '.' > registry-data/yanked.json 2>/dev/null || echo "$YANKED_JSON" > registry-data/yanked.json
 
           echo "Found $YANKED_COUNT yanked/deprecated package versions"
 
           # Generate JSON stats file
-          cat > data/stats.json << STATSEOF
+          cat > registry-data/stats.json << STATSEOF
           {
             "lastSync": "$LAST_SYNC",
             "totalPackages": $TOTAL_PACKAGES,
             "totalOwners": $TOTAL_OWNERS,
             "yankedCount": $YANKED_COUNT,
-            "lastSyncPackages": $SYNC_PACKAGES,
-            "lastSyncOwners": $SYNC_OWNERS,
             "source": "mooncakes.io",
             "mirrorUrl": "https://moonrockz.github.io/mooncakes-mirror"
           }
           STATSEOF
 
-          # Pretty print for logs
           echo "Registry Statistics:"
-          cat data/stats.json
-          echo ""
-          echo "This sync added $SYNC_PACKAGES packages and $SYNC_OWNERS publishers"
+          cat registry-data/stats.json
 
-      - name: Commit and push all updates
+          echo "packages=$TOTAL_PACKAGES" >> $GITHUB_OUTPUT
+          echo "owners=$TOTAL_OWNERS" >> $GITHUB_OUTPUT
+
+      - name: Prepare registry branch content
         run: |
-          git add data/index/ data/stats.json data/yanked.json
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update registry index and stats - $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
-            git push origin main
-          fi
+          mkdir -p registry-content/git/index
+
+          # Copy the index (excluding .git directory to avoid nested repo issues)
+          rsync -av --exclude='.git' mooncakes-index/ registry-content/git/index/
+
+          # Initialize git and enable dumb HTTP protocol
+          cd registry-content/git/index
+          git init
+          git add -A
+          git commit -m "Index snapshot $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          git update-server-info
+          cd ../../..
+
+          # Copy stats files
+          cp registry-data/stats.json registry-content/
+          cp registry-data/yanked.json registry-content/
+
+          echo "=== Registry content prepared ==="
+          find registry-content -type f | head -20
+
+      - name: Push to registry branch
+        run: |
+          cd registry-content
+          git init
+          git add -A
+          git commit -m "Mirror update - ${{ steps.stats.outputs.packages }} packages, ${{ steps.stats.outputs.owners }} publishers"
+          git branch -M registry
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git push -f origin registry
+          echo "Pushed to registry branch successfully"
+
+      - name: Summary
+        run: |
+          echo "## Mirror Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Packages**: ${{ steps.stats.outputs.packages }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Publishers**: ${{ steps.stats.outputs.owners }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: \`registry\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The pages workflow will automatically deploy the updated mirror." >> $GITHUB_STEP_SUMMARY

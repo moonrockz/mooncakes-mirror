@@ -1,7 +1,7 @@
 name: Deploy Registry to GitHub Pages
 
 on:
-  # Run after mirror workflow completes on main branch
+  # Run after mirror workflow completes
   workflow_run:
     workflows: ["Mirror Mooncakes Registry"]
     branches: [main]
@@ -13,7 +13,7 @@ on:
 
 # Allow only one deployment at a time
 concurrency:
-  group: pages-${{ github.ref }}
+  group: pages
   cancel-in-progress: false
 
 permissions:
@@ -24,20 +24,39 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Only deploy if mirror workflow succeeded on main branch, or on manual trigger from main
+    # Only deploy if mirror workflow succeeded, or on manual trigger
     if: |
-      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') ||
-      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
-    
+      (github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch')
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    
+
     steps:
-      - name: Checkout repository
+      - name: Checkout main branch (code)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: main
+          path: main
+
+      - name: Checkout registry branch (data)
+        uses: actions/checkout@v4
+        with:
+          ref: registry
+          path: registry
+        continue-on-error: true
+
+      - name: Check registry branch exists
+        id: registry-check
+        run: |
+          if [ -d "registry" ] && [ -f "registry/stats.json" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Registry branch found with data"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Registry branch not found or empty - will deploy site without index"
+          fi
 
       - name: Setup MoonBit
         uses: chawyehsu/setup-moonup@v1
@@ -48,12 +67,14 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
+        working-directory: main
         run: |
           moon update
           moon add Yoorkin/rabbit-tea
           npm install
 
       - name: Build MoonBit site
+        working-directory: main
         run: npm run build
 
       - name: Setup Pages
@@ -61,37 +82,69 @@ jobs:
 
       - name: Create pages directory structure
         run: |
-          mkdir -p _site/git
+          mkdir -p _site
 
-          # Copy the Vite build output
-          cp -r src/dist/* _site/
-
-          # Copy the index repository for Git HTTP protocol
-          if [ -d "data/index" ]; then
-            cp -r data/index _site/git/index
-
-            # Enable Git dumb HTTP protocol
-            cd _site/git/index
-            git update-server-info
-            cd ../../..
+          # Copy the Vite build output from main branch
+          if [ -d "main/src/dist" ]; then
+            cp -r main/src/dist/* _site/
+            echo "Copied Vite build output"
           fi
 
-          # Copy stats.json and yanked.json for the dashboard
-          if [ -f "data/stats.json" ]; then
-            cp data/stats.json _site/stats.json
-          fi
-          if [ -f "data/yanked.json" ]; then
-            cp data/yanked.json _site/yanked.json
+          # Copy registry data (index, stats, yanked.json) from registry branch
+          if [ "${{ steps.registry-check.outputs.exists }}" == "true" ]; then
+            # Copy the git index
+            if [ -d "registry/git" ]; then
+              cp -r registry/git _site/
+              echo "Copied git index"
+            fi
+
+            # Copy stats.json
+            if [ -f "registry/stats.json" ]; then
+              cp registry/stats.json _site/
+              echo "Copied stats.json"
+            fi
+
+            # Copy yanked.json
+            if [ -f "registry/yanked.json" ]; then
+              cp registry/yanked.json _site/
+              echo "Copied yanked.json"
+            fi
+          else
+            echo "No registry data available - deploying site only"
+            # Create placeholder stats.json
+            cat > _site/stats.json << 'EOF'
+          {
+            "lastSync": "pending",
+            "totalPackages": 0,
+            "totalOwners": 0,
+            "yankedCount": 0,
+            "source": "mooncakes.io",
+            "mirrorUrl": "https://moonrockz.github.io/mooncakes-mirror"
+          }
+          EOF
           fi
 
-          # Copy the yanked.html page (still using vanilla HTML for now)
-          cp yanked.html _site/yanked.html
-      
+          # Copy yanked.html from main branch
+          if [ -f "main/yanked.html" ]; then
+            cp main/yanked.html _site/
+            echo "Copied yanked.html"
+          fi
+
+          echo "=== Final site structure ==="
+          find _site -type f | head -30
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '_site'
-      
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Registry data**: ${{ steps.registry-check.outputs.exists == 'true' && 'Included' || 'Not available' }}" >> $GITHUB_STEP_SUMMARY
