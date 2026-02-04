@@ -94,6 +94,15 @@ jobs:
           echo "Mirroring moonbitlang packages (scheduled run)..."
           moonbit-registry mirror "moonbitlang/*"
 
+      - name: Debug - Check source index contents
+        run: |
+          echo "=== Checking source index ==="
+          ls -la data/index/sources/mooncakes/ 2>/dev/null || echo "Directory does not exist"
+          echo "=== Checking for user directory ==="
+          ls -la data/index/sources/mooncakes/user/ 2>/dev/null || echo "user/ does not exist"
+          echo "=== Git status in source index ==="
+          cd data/index/sources/mooncakes && git status && git log --oneline -3 && cd ../../../..
+
       - name: Mirror packages (Default - moonbitlang on manual trigger)
         if: ${{ github.event.inputs.full_mirror != 'true' && github.event.inputs.pattern == '' && github.event_name == 'workflow_dispatch' }}
         run: |
