@@ -1,0 +1,6 @@
+{
+  "import": [
+    { "path": "Yoorkin/rabbit-tea/html", "alias": "html" },
+    "moonbitlang/core/json"
+  ]
+}

@@ -3,8 +3,10 @@
   "import": [
     { "path": "Yoorkin/rabbit-tea", "alias": "tea" },
     { "path": "Yoorkin/rabbit-tea/html", "alias": "html" },
-    { "path": "Yoorkin/rabbit-tea/http", "alias": "http" },
     { "path": "Yoorkin/rabbit-tea/url", "alias": "url" },
-    "moonbitlang/core/json"
+    { "path": "moonrockz/mooncakes-mirror/shared", "alias": "shared" },
+    { "path": "moonrockz/mooncakes-mirror/pages/home", "alias": "home" },
+    { "path": "moonrockz/mooncakes-mirror/pages/packages", "alias": "packages" },
+    { "path": "moonrockz/mooncakes-mirror/pages/publishers", "alias": "publishers" }
   ]
 }
