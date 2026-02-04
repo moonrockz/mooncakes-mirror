@@ -1,0 +1,116 @@
+name: Mirror Mooncakes Registry
+
+on:
+  # Run daily at 2 AM UTC
+  schedule:
+    - cron: '0 2 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      pattern:
+        description: 'Package pattern to mirror (e.g., "moonbitlang/*" or leave empty for full mirror)'
+        required: false
+        default: ''
+      full_mirror:
+        description: 'Perform a full mirror of all packages'
+        type: boolean
+        required: false
+        default: false
+
+# Allow only one mirror operation at a time
+concurrency:
+  group: mirror-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+        with:
+          install: true
+      
+      - name: Install moonbit-registry-tools
+        run: mise use -g "github:moonrockz/moonbit-registry-tools@latest"
+      
+      - name: Verify moonbit-registry installation
+        run: moonbit-registry --version || moonbit-registry -v || echo "Version command not available"
+      
+      - name: Initialize registry (if needed)
+        run: |
+          if [ ! -d "data/index" ]; then
+            moonbit-registry init --name mooncakes-mirror
+          fi
+      
+      - name: Configure Git for index updates
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Mirror packages (Full)
+        if: ${{ github.event.inputs.full_mirror == 'true' || (github.event_name == 'schedule' && github.event.inputs.pattern == '') }}
+        run: |
+          echo "Performing full mirror of mooncakes registry..."
+          moonbit-registry mirror --full
+      
+      - name: Mirror packages (Pattern)
+        if: ${{ github.event.inputs.full_mirror != 'true' && github.event.inputs.pattern != '' }}
+        run: |
+          echo "Mirroring packages matching pattern: ${{ github.event.inputs.pattern }}"
+          moonbit-registry mirror "${{ github.event.inputs.pattern }}"
+      
+      - name: Mirror packages (Default - moonbitlang)
+        if: ${{ github.event.inputs.full_mirror != 'true' && github.event.inputs.pattern == '' && github.event_name != 'schedule' }}
+        run: |
+          echo "Mirroring moonbitlang packages..."
+          moonbit-registry mirror "moonbitlang/*"
+      
+      - name: Commit and push index updates
+        run: |
+          git add data/index/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update registry index - $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            git push origin main
+          fi
+      
+      - name: Generate registry statistics
+        run: |
+          echo "## Registry Mirror Statistics" > mirror-stats.txt
+          echo "" >> mirror-stats.txt
+          echo "**Last Updated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> mirror-stats.txt
+          echo "" >> mirror-stats.txt
+          
+          if [ -d "data/packages" ]; then
+            PACKAGE_COUNT=$(find data/packages -type f -name "*.zip" 2>/dev/null | wc -l)
+            TOTAL_SIZE=$(du -sh data/packages 2>/dev/null | cut -f1)
+            echo "**Total Packages:** $PACKAGE_COUNT" >> mirror-stats.txt
+            echo "**Total Size:** $TOTAL_SIZE" >> mirror-stats.txt
+          else
+            echo "**Total Packages:** 0" >> mirror-stats.txt
+            echo "**Total Size:** 0" >> mirror-stats.txt
+          fi
+          
+          cat mirror-stats.txt
+      
+      - name: Upload statistics
+        uses: actions/upload-artifact@v4
+        with:
+          name: mirror-statistics
+          path: mirror-stats.txt
+          retention-days: 30

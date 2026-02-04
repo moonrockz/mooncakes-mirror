@@ -1,0 +1,50 @@
+# MoonBit Registry Configuration for mooncakes-mirror
+# This is a mirror of the mooncakes.io registry
+
+[registry]
+name = "mooncakes-mirror"
+data_dir = "./data"
+
+# Mirror from mooncakes.io (the official MoonBit registry)
+[[sources]]
+name = "mooncakes"
+type = "mooncakes"
+url = "https://mooncakes.io"
+index_url = "https://mooncakes.io/git/index"
+index_type = "git"
+enabled = true
+priority = 100
+
+# Set the default source for mirroring
+default_source = "mooncakes"
+
+[mirror]
+# Automatically sync with upstream on a schedule
+auto_sync = false
+
+# Sync interval (e.g., "1h", "30m", "1d")
+sync_interval = "1h"
+
+# Package patterns to mirror (empty = mirror on demand)
+# This will be configured in the GitHub Actions workflow
+packages = []
+
+[server]
+# Host to bind the server to
+host = "0.0.0.0"
+
+# Port for the registry server
+port = 8080
+
+# Base URL for the registry (will be GitHub Pages URL)
+base_url = "https://moonrockz.github.io/mooncakes-mirror"
+
+[git]
+# Remote URL to push index updates
+remote_url = "https://github.com/moonrockz/mooncakes-mirror.git"
+
+# Branch name for the index
+branch = "main"
+
+# Automatically push index changes to remote
+auto_push = false

@@ -1,0 +1,6 @@
+# Exclude cached package files (they can be regenerated)
+data/packages/*
+!data/packages/.gitkeep
+
+# Keep the index (this should be committed)
+!data/index/
