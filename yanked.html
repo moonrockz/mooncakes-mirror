@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yanked Packages - MoonCakes Mirror Registry</title>
+  <title>Yanked & Deprecated Packages - MoonCakes Mirror Registry</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -103,17 +103,17 @@
     <a href="index.html">&larr; Back to Mirror Registry</a>
   </div>
 
-  <h1>Yanked Packages</h1>
+  <h1>Yanked & Deprecated Packages</h1>
 
   <div class="info">
-    <strong>What are yanked packages?</strong><br>
-    Yanked packages are versions that have been marked as withdrawn by their maintainers.
-    They typically indicate versions with critical bugs, security issues, or accidental publishes.
-    Package managers will not automatically install yanked versions.
+    <strong>What are yanked/deprecated packages?</strong><br>
+    These are package versions that have been marked as withdrawn or deprecated by their maintainers.
+    They typically indicate versions with critical bugs, security issues, accidental publishes, or
+    packages that have been renamed or superseded. Package managers will not automatically install these versions.
   </div>
 
   <div class="summary">
-    <span class="summary-count" id="yanked-total"><span class="loading">...</span></span> yanked package versions
+    <span class="summary-count" id="yanked-total"><span class="loading">...</span></span> yanked/deprecated package versions
     <div id="generated-time" style="font-size: 0.9em; color: #666; margin-top: 5px;"></div>
   </div>
 
@@ -164,23 +164,20 @@
         return;
       }
 
-      // Group by package name
-      const grouped = {};
-      packages.forEach(pkg => {
-        if (!grouped[pkg.name]) {
-          grouped[pkg.name] = [];
-        }
-        grouped[pkg.name].push(pkg.version);
+      // Sort packages by name then version
+      const sorted = [...packages].sort((a, b) => {
+        const nameComp = a.name.localeCompare(b.name);
+        return nameComp !== 0 ? nameComp : a.version.localeCompare(b.version);
       });
 
-      let html = '<table><thead><tr><th>Package</th><th>Yanked Versions</th></tr></thead><tbody>';
+      let html = '<table><thead><tr><th>Package</th><th>Version</th><th>Reason</th></tr></thead><tbody>';
 
-      const sortedNames = Object.keys(grouped).sort();
-      sortedNames.forEach(name => {
-        const versions = grouped[name].sort().join(', ');
+      sorted.forEach(pkg => {
+        const reason = pkg.reason || 'yanked';
         html += `<tr>
-          <td class="package-name">${escapeHtml(name)}</td>
-          <td class="version">${escapeHtml(versions)}</td>
+          <td class="package-name">${escapeHtml(pkg.name)}</td>
+          <td class="version">${escapeHtml(pkg.version)}</td>
+          <td>${escapeHtml(reason)}</td>
         </tr>`;
       });
 
