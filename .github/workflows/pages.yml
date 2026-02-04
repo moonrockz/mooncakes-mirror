@@ -1,12 +1,13 @@
 name: Deploy Registry to GitHub Pages
 
 on:
-  # Run after mirror workflow completes
+  # Run after mirror workflow completes on main branch
   workflow_run:
     workflows: ["Mirror Mooncakes Registry"]
+    branches: [main]
     types:
       - completed
-  
+
   # Also allow manual trigger
   workflow_dispatch:
 
@@ -23,8 +24,10 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Only deploy if mirror workflow succeeded or on manual trigger
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    # Only deploy if mirror workflow succeeded on main branch, or on manual trigger from main
+    if: |
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
     
     environment:
       name: github-pages
