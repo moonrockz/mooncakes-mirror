@@ -4,6 +4,7 @@
 [registry]
 name = "mooncakes-mirror"
 data_dir = "./data"
+default_source = "mooncakes"
 
 # Mirror from mooncakes.io (the official MoonBit registry)
 [[sources]]
@@ -14,9 +15,6 @@ index_url = "https://mooncakes.io/git/index"
 index_type = "git"
 enabled = true
 priority = 100
-
-# Set the default source for mirroring
-default_source = "mooncakes"
 
 [mirror]
 # Automatically sync with upstream on a schedule
