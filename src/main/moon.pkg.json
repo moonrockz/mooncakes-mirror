@@ -4,6 +4,7 @@
     { "path": "Yoorkin/rabbit-tea", "alias": "tea" },
     { "path": "Yoorkin/rabbit-tea/html", "alias": "html" },
     { "path": "Yoorkin/rabbit-tea/url", "alias": "url" },
+    { "path": "Yoorkin/rabbit-tea/nav", "alias": "nav" },
     { "path": "moonrockz/mooncakes-mirror/shared", "alias": "shared" },
     { "path": "moonrockz/mooncakes-mirror/pages/home", "alias": "home" },
     { "path": "moonrockz/mooncakes-mirror/pages/packages", "alias": "packages" },

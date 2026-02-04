@@ -21,6 +21,8 @@ struct Model {
 ///|
 /// Application messages - wraps page messages
 enum Msg {
+  Navigate(String)
+  UrlChanged(@url.Url)
   HomeMsg(@home.Msg)
   PackagesMsg(@packages.Msg)
   PublishersMsg(@publishers.Msg)
@@ -48,7 +50,12 @@ fn parse_route(url : @url.Url) -> String {
 /// Initialize the application
 fn initialize(url : @url.Url) -> (@tea.Cmd[Msg], Model) {
   let route = parse_route(url)
+  init_page(route)
+}
 
+///|
+/// Initialize page based on route string
+fn init_page(route : String) -> (@tea.Cmd[Msg], Model) {
   match route {
     "packages" => {
       let (cmd, page_model) = @packages.page_init()
@@ -72,6 +79,15 @@ fn initialize(url : @url.Url) -> (@tea.Cmd[Msg], Model) {
 /// Update function - routes messages to appropriate page
 fn update(msg : Msg, model : Model) -> (@tea.Cmd[Msg], Model) {
   match msg {
+    Navigate(route) => {
+      // Push the URL and let url_changed handle the page switch
+      (@nav.push_url("#/\{route}"), model)
+    }
+    UrlChanged(url) => {
+      // Re-initialize the page based on the new URL
+      let route = parse_route(url)
+      init_page(route)
+    }
     HomeMsg(page_msg) => {
       match model.current_page {
         Home(page_model) => {
@@ -130,5 +146,5 @@ fn view(model : Model) -> @html.Html[Msg] {
 ///|
 /// Application entry point
 fn main {
-  @tea.application(initialize~, update~, view~)
+  @tea.application(initialize~, update~, view~, url_changed=fn(url) { UrlChanged(url) })
 }

@@ -21,7 +21,7 @@ pub fn[Msg] navbar(current_page : String) -> @html.Html[Msg] {
     div(class="max-w-6xl mx-auto px-4 sm:px-6", [
       div(class="flex items-center justify-between h-16", [
         // Logo
-        a(href="/mooncakes-mirror/", class="flex items-center gap-2", [
+        a(href="#/home", class="flex items-center gap-2", [
           div(class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center", [
             span(class="text-white font-bold text-sm", [text("M")]),
           ]),
@@ -29,9 +29,9 @@ pub fn[Msg] navbar(current_page : String) -> @html.Html[Msg] {
         ]),
         // Nav links
         div(class="flex items-center gap-2", [
-          nav_link("/mooncakes-mirror/", "Home", current_page == "home"),
-          nav_link("/mooncakes-mirror/#/packages", "Packages", current_page == "packages"),
-          nav_link("/mooncakes-mirror/#/publishers", "Publishers", current_page == "publishers"),
+          nav_link("#/home", "Home", current_page == "home"),
+          nav_link("#/packages", "Packages", current_page == "packages"),
+          nav_link("#/publishers", "Publishers", current_page == "publishers"),
         ]),
       ]),
     ]),
