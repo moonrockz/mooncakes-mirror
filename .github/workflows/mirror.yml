@@ -7,16 +7,10 @@ on:
 
   # Allow manual trigger
   workflow_dispatch:
-    inputs:
-      full_mirror:
-        description: 'Perform a full mirror of all packages'
-        type: boolean
-        required: false
-        default: true
 
 # Allow only one mirror operation at a time
 concurrency:
-  group: mirror-${{ github.ref }}
+  group: mirror
   cancel-in-progress: false
 
 permissions:
@@ -28,31 +22,28 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Checkout main branch
+      - name: Checkout registry-index branch
         uses: actions/checkout@v4
         with:
-          ref: main
-          path: main
+          ref: registry-index
+          fetch-depth: 0
 
       - name: Configure Git
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Clone mooncakes.io index
+      - name: Add upstream remote
         run: |
-          echo "Cloning mooncakes.io index repository..."
-          git clone --depth 1 https://mooncakes.io/git/index mooncakes-index
-          echo "Index cloned successfully"
+          git remote add upstream https://mooncakes.io/git/index || true
+          git remote -v
 
-          # Show some stats
-          echo "=== Index contents ==="
-          ls -la mooncakes-index/
-          if [ -d "mooncakes-index/user" ]; then
-            OWNER_COUNT=$(find mooncakes-index/user -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-            PACKAGE_COUNT=$(find mooncakes-index/user -name "*.index" -type f 2>/dev/null | wc -l)
-            echo "Found $PACKAGE_COUNT packages from $OWNER_COUNT publishers"
-          fi
+      - name: Pull from upstream
+        run: |
+          echo "Pulling latest changes from mooncakes.io..."
+          git fetch upstream main
+          git merge upstream/main --no-edit -m "Sync with mooncakes.io $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo "Sync complete"
 
       - name: Generate statistics
         id: stats
@@ -62,10 +53,9 @@ jobs:
           TOTAL_OWNERS=0
           YANKED_COUNT=0
 
-          SOURCE_INDEX="mooncakes-index/user"
-          if [ -d "$SOURCE_INDEX" ]; then
-            TOTAL_OWNERS=$(find "$SOURCE_INDEX" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-            TOTAL_PACKAGES=$(find "$SOURCE_INDEX" -name "*.index" -type f 2>/dev/null | wc -l)
+          if [ -d "user" ]; then
+            TOTAL_OWNERS=$(find user -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+            TOTAL_PACKAGES=$(find user -name "*.index" -type f 2>/dev/null | wc -l)
           fi
 
           # Count yanked/deprecated packages and generate yanked.json
@@ -73,7 +63,7 @@ jobs:
           YANKED_JSON='{"yankedPackages":['
           FIRST=true
 
-          if [ -d "$SOURCE_INDEX" ]; then
+          if [ -d "user" ]; then
             while IFS= read -r index_file; do
               while IFS= read -r line; do
                 if echo "$line" | grep -qE '"yanked"[[:space:]]*:[[:space:]]*true|"deprecated"[[:space:]]*:'; then
@@ -92,17 +82,16 @@ jobs:
                   fi
                 fi
               done < "$index_file"
-            done < <(find "$SOURCE_INDEX" -name "*.index" -type f 2>/dev/null)
+            done < <(find user -name "*.index" -type f 2>/dev/null)
           fi
 
           YANKED_JSON="$YANKED_JSON],\"count\":$YANKED_COUNT,\"generatedAt\":\"$LAST_SYNC\"}"
-          mkdir -p registry-data
-          echo "$YANKED_JSON" | jq '.' > registry-data/yanked.json 2>/dev/null || echo "$YANKED_JSON" > registry-data/yanked.json
+          echo "$YANKED_JSON" | jq '.' > yanked.json 2>/dev/null || echo "$YANKED_JSON" > yanked.json
 
           echo "Found $YANKED_COUNT yanked/deprecated package versions"
 
           # Generate JSON stats file
-          cat > registry-data/stats.json << STATSEOF
+          cat > stats.json << STATSEOF
           {
             "lastSync": "$LAST_SYNC",
             "totalPackages": $TOTAL_PACKAGES,
@@ -114,32 +103,21 @@ jobs:
           STATSEOF
 
           echo "Registry Statistics:"
-          cat registry-data/stats.json
+          cat stats.json
 
           echo "packages=$TOTAL_PACKAGES" >> $GITHUB_OUTPUT
           echo "owners=$TOTAL_OWNERS" >> $GITHUB_OUTPUT
 
-      - name: Prepare registry branch content
+      - name: Commit and push
         run: |
-          mkdir -p registry-content
-
-          # Copy stats files (the index itself will be cloned fresh by pages workflow)
-          cp registry-data/stats.json registry-content/
-          cp registry-data/yanked.json registry-content/
-
-          echo "=== Registry content prepared ==="
-          ls -la registry-content/
-
-      - name: Push to registry branch
-        run: |
-          cd registry-content
-          git init
           git add -A
-          git commit -m "Mirror update - ${{ steps.stats.outputs.packages }} packages, ${{ steps.stats.outputs.owners }} publishers"
-          git branch -M registry
-          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git push -f origin registry
-          echo "Pushed to registry branch successfully"
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Mirror update - ${{ steps.stats.outputs.packages }} packages, ${{ steps.stats.outputs.owners }} publishers"
+            git push origin registry-index
+            echo "Pushed to registry-index branch"
+          fi
 
       - name: Summary
         run: |
@@ -147,6 +125,4 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Packages**: ${{ steps.stats.outputs.packages }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Publishers**: ${{ steps.stats.outputs.owners }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch**: \`registry\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "The pages workflow will automatically deploy the updated mirror." >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: \`registry-index\`" >> $GITHUB_STEP_SUMMARY

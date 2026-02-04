@@ -1,18 +1,20 @@
 # MoonCakes Mirror - Registry Index
 
-**Note:** The actual registry index data is stored on the `registry` branch, not on `main`.
+**Note:** The actual registry index data is stored on the `registry-index` branch, not on `main`.
 
 ## Architecture
 
 - **`main` branch**: Contains source code (MoonBit site, workflows)
-- **`registry` branch**: Contains the synced registry index and stats
+- **`registry-index` branch**: A clone of mooncakes.io index with upstream tracking
 
 ## How It Works
 
-1. The `mirror.yml` workflow clones the mooncakes.io index
-2. It generates stats and pushes everything to the `registry` branch
-3. The `pages.yml` workflow combines the built site from `main` with data from `registry`
+1. The `registry-index` branch is a direct clone of mooncakes.io index
+2. The `mirror.yml` workflow pulls from upstream (mooncakes.io) and pushes to `registry-index`
+3. The `pages.yml` workflow combines the built site from `main` with the index from `registry-index`
 4. GitHub Pages serves the combined result
+
+This approach keeps a full history of the index and reduces reliance on upstream during deployment.
 
 ## Synchronization
 

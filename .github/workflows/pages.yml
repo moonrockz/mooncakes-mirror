@@ -4,7 +4,7 @@ on:
   # Run after mirror workflow completes
   workflow_run:
     workflows: ["Mirror Mooncakes Registry"]
-    branches: [main]
+    branches: [main, registry-index]
     types:
       - completed
 
@@ -40,23 +40,12 @@ jobs:
           ref: main
           path: main
 
-      - name: Checkout registry branch (data)
+      - name: Checkout registry-index branch (index data)
         uses: actions/checkout@v4
         with:
-          ref: registry
-          path: registry
-        continue-on-error: true
-
-      - name: Check registry branch exists
-        id: registry-check
-        run: |
-          if [ -d "registry" ] && [ -f "registry/stats.json" ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Registry branch found with data"
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-            echo "Registry branch not found or empty - will deploy site without index"
-          fi
+          ref: registry-index
+          path: registry-index
+          fetch-depth: 0
 
       - name: Setup MoonBit
         uses: chawyehsu/setup-moonup@v1
@@ -80,12 +69,6 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Clone mooncakes.io index for git serving
-        run: |
-          echo "Cloning mooncakes.io index..."
-          git clone --bare https://mooncakes.io/git/index mooncakes-index.git
-          echo "Index cloned successfully"
-
       - name: Create pages directory structure
         run: |
           mkdir -p _site/git
@@ -96,36 +79,23 @@ jobs:
             echo "Copied Vite build output"
           fi
 
-          # Copy the bare git repo for serving
-          cp -r mooncakes-index.git _site/git/index
+          # The registry-index branch IS the git index - copy it as a bare repo
+          # First create a bare clone from the checked out repo
+          git clone --bare registry-index _site/git/index
           cd _site/git/index
           git update-server-info
           cd ../../..
           echo "Git index prepared for dumb HTTP protocol"
 
-          # Copy stats and yanked.json from registry branch
-          if [ "${{ steps.registry-check.outputs.exists }}" == "true" ]; then
-            if [ -f "registry/stats.json" ]; then
-              cp registry/stats.json _site/
-              echo "Copied stats.json"
-            fi
+          # Copy stats.json and yanked.json from registry-index
+          if [ -f "registry-index/stats.json" ]; then
+            cp registry-index/stats.json _site/
+            echo "Copied stats.json"
+          fi
 
-            if [ -f "registry/yanked.json" ]; then
-              cp registry/yanked.json _site/
-              echo "Copied yanked.json"
-            fi
-          else
-            echo "No registry data available - creating placeholder"
-            cat > _site/stats.json << 'EOF'
-          {
-            "lastSync": "pending",
-            "totalPackages": 0,
-            "totalOwners": 0,
-            "yankedCount": 0,
-            "source": "mooncakes.io",
-            "mirrorUrl": "https://moonrockz.github.io/mooncakes-mirror"
-          }
-          EOF
+          if [ -f "registry-index/yanked.json" ]; then
+            cp registry-index/yanked.json _site/
+            echo "Copied yanked.json"
           fi
 
           # Copy yanked.html from main branch
@@ -154,4 +124,4 @@ jobs:
           echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **URL**: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Registry data**: ${{ steps.registry-check.outputs.exists == 'true' && 'Included' || 'Not available' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Index branch**: \`registry-index\`" >> $GITHUB_STEP_SUMMARY
