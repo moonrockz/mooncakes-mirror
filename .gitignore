@@ -4,3 +4,4 @@ data/packages/*
 
 # Keep the index (this should be committed)
 !data/index/
+.claude/settings.local.json

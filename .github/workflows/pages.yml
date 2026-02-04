@@ -56,12 +56,16 @@ jobs:
             cd ../../..
           fi
 
-          # Copy the index page
+          # Copy the index page and yanked page
           cp index.html _site/index.html
+          cp yanked.html _site/yanked.html
 
-          # Copy stats.json for the dashboard
+          # Copy stats.json and yanked.json for the dashboard
           if [ -f "data/stats.json" ]; then
             cp data/stats.json _site/stats.json
+          fi
+          if [ -f "data/yanked.json" ]; then
+            cp data/yanked.json _site/yanked.json
           fi
       
       - name: Upload artifact

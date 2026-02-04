@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yanked Packages - MoonCakes Mirror Registry</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 2px solid #dc3545;
+      padding-bottom: 10px;
+    }
+    .back-link {
+      margin-bottom: 20px;
+    }
+    a {
+      color: #007acc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .info {
+      background: #fff3cd;
+      padding: 15px;
+      border-left: 4px solid #ffc107;
+      margin: 20px 0;
+    }
+    .summary {
+      background: #f8d7da;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .summary-count {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #dc3545;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+    tr:hover {
+      background: #f5f5f5;
+    }
+    .package-name {
+      font-family: "Courier New", monospace;
+      color: #333;
+    }
+    .version {
+      font-family: "Courier New", monospace;
+      color: #666;
+    }
+    .loading {
+      color: #999;
+      font-style: italic;
+      text-align: center;
+      padding: 40px;
+    }
+    .empty {
+      color: #28a745;
+      text-align: center;
+      padding: 40px;
+      background: #d4edda;
+      border-radius: 8px;
+    }
+    .search-box {
+      margin-bottom: 20px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .search-box input:focus {
+      outline: none;
+      border-color: #007acc;
+    }
+  </style>
+</head>
+<body>
+  <div class="back-link">
+    <a href="index.html">&larr; Back to Mirror Registry</a>
+  </div>
+
+  <h1>Yanked Packages</h1>
+
+  <div class="info">
+    <strong>What are yanked packages?</strong><br>
+    Yanked packages are versions that have been marked as withdrawn by their maintainers.
+    They typically indicate versions with critical bugs, security issues, or accidental publishes.
+    Package managers will not automatically install yanked versions.
+  </div>
+
+  <div class="summary">
+    <span class="summary-count" id="yanked-total"><span class="loading">...</span></span> yanked package versions
+    <div id="generated-time" style="font-size: 0.9em; color: #666; margin-top: 5px;"></div>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Search packages..." oninput="filterTable()">
+  </div>
+
+  <div id="content">
+    <div class="loading">Loading yanked packages...</div>
+  </div>
+
+  <script>
+    let allPackages = [];
+
+    async function loadYankedPackages() {
+      const contentDiv = document.getElementById('content');
+      try {
+        const response = await fetch('yanked.json');
+        if (!response.ok) throw new Error('Yanked data not available');
+        const data = await response.json();
+
+        document.getElementById('yanked-total').textContent = data.count ?? 0;
+
+        if (data.generatedAt) {
+          const genDate = new Date(data.generatedAt);
+          document.getElementById('generated-time').textContent = `Last updated: ${genDate.toUTCString()}`;
+        }
+
+        allPackages = data.yankedPackages ?? [];
+
+        if (allPackages.length === 0) {
+          contentDiv.innerHTML = '<div class="empty">No yanked packages found. All packages are healthy!</div>';
+          return;
+        }
+
+        renderTable(allPackages);
+      } catch (e) {
+        contentDiv.innerHTML = '<div class="loading">Unable to load yanked packages data.</div>';
+        document.getElementById('yanked-total').textContent = '-';
+      }
+    }
+
+    function renderTable(packages) {
+      const contentDiv = document.getElementById('content');
+
+      if (packages.length === 0) {
+        contentDiv.innerHTML = '<div class="empty">No matching packages found.</div>';
+        return;
+      }
+
+      // Group by package name
+      const grouped = {};
+      packages.forEach(pkg => {
+        if (!grouped[pkg.name]) {
+          grouped[pkg.name] = [];
+        }
+        grouped[pkg.name].push(pkg.version);
+      });
+
+      let html = '<table><thead><tr><th>Package</th><th>Yanked Versions</th></tr></thead><tbody>';
+
+      const sortedNames = Object.keys(grouped).sort();
+      sortedNames.forEach(name => {
+        const versions = grouped[name].sort().join(', ');
+        html += `<tr>
+          <td class="package-name">${escapeHtml(name)}</td>
+          <td class="version">${escapeHtml(versions)}</td>
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+      contentDiv.innerHTML = html;
+    }
+
+    function filterTable() {
+      const search = document.getElementById('search').value.toLowerCase();
+      const filtered = allPackages.filter(pkg =>
+        pkg.name.toLowerCase().includes(search) ||
+        pkg.version.toLowerCase().includes(search)
+      );
+      renderTable(filtered);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    loadYankedPackages();
+  </script>
+</body>
+</html>

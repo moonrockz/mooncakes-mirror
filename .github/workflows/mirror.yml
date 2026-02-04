@@ -114,6 +114,7 @@ jobs:
           LAST_SYNC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           TOTAL_PACKAGES=0
           TOTAL_OWNERS=0
+          YANKED_COUNT=0
 
           # Count total packages and owners in the index
           if [ -d "data/index" ]; then
@@ -129,12 +130,47 @@ jobs:
           SYNC_PACKAGES=$((TOTAL_PACKAGES - PRE_PACKAGES))
           SYNC_OWNERS=$((TOTAL_OWNERS - PRE_OWNERS))
 
+          # Count yanked packages and generate yanked.json
+          echo "Scanning for yanked packages..."
+          YANKED_JSON='{"yankedPackages":['
+          FIRST=true
+
+          # Find all .index files in the source index
+          SOURCE_INDEX="data/index/sources/mooncakes/user"
+          if [ -d "$SOURCE_INDEX" ]; then
+            while IFS= read -r index_file; do
+              # Parse each line of the JSONL file for yanked entries
+              while IFS= read -r line; do
+                if echo "$line" | grep -q '"yanked"[[:space:]]*:[[:space:]]*true'; then
+                  YANKED_COUNT=$((YANKED_COUNT + 1))
+                  # Extract name and version
+                  PKG_NAME=$(echo "$line" | grep -oP '"name"[[:space:]]*:[[:space:]]*"\K[^"]+' || echo "")
+                  PKG_VERSION=$(echo "$line" | grep -oP '"version"[[:space:]]*:[[:space:]]*"\K[^"]+' || echo "")
+                  if [ -n "$PKG_NAME" ] && [ -n "$PKG_VERSION" ]; then
+                    if [ "$FIRST" = true ]; then
+                      FIRST=false
+                    else
+                      YANKED_JSON="$YANKED_JSON,"
+                    fi
+                    YANKED_JSON="$YANKED_JSON{\"name\":\"$PKG_NAME\",\"version\":\"$PKG_VERSION\"}"
+                  fi
+                fi
+              done < "$index_file"
+            done < <(find "$SOURCE_INDEX" -name "*.index" -type f 2>/dev/null)
+          fi
+
+          YANKED_JSON="$YANKED_JSON],\"count\":$YANKED_COUNT,\"generatedAt\":\"$LAST_SYNC\"}"
+          echo "$YANKED_JSON" | jq '.' > data/yanked.json 2>/dev/null || echo "$YANKED_JSON" > data/yanked.json
+
+          echo "Found $YANKED_COUNT yanked package versions"
+
           # Generate JSON stats file
           cat > data/stats.json << STATSEOF
           {
             "lastSync": "$LAST_SYNC",
             "totalPackages": $TOTAL_PACKAGES,
             "totalOwners": $TOTAL_OWNERS,
+            "yankedCount": $YANKED_COUNT,
             "lastSyncPackages": $SYNC_PACKAGES,
             "lastSyncOwners": $SYNC_OWNERS,
             "source": "mooncakes.io",
@@ -150,7 +186,7 @@ jobs:
 
       - name: Commit and push all updates
         run: |
-          git add data/index/ data/stats.json
+          git add data/index/ data/stats.json data/yanked.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else

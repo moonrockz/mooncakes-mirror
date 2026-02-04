@@ -81,6 +81,16 @@
     .sync-delta.zero {
       color: #999;
     }
+    .stat-card.yanked .stat-value {
+      color: #dc3545;
+    }
+    .stat-card.yanked a {
+      color: #dc3545;
+      text-decoration: none;
+    }
+    .stat-card.yanked a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -101,6 +111,10 @@
         <div class="stat-value" id="owner-count"><span class="loading">...</span></div>
         <div class="stat-label">Total Publishers</div>
         <span class="sync-delta" id="owner-delta"></span>
+      </div>
+      <div class="stat-card yanked">
+        <div class="stat-value"><a href="yanked.html" id="yanked-count"><span class="loading">...</span></a></div>
+        <div class="stat-label">Yanked Versions</div>
       </div>
     </div>
 
@@ -147,6 +161,7 @@ moon build</code></pre>
         // Display totals (support both old and new field names)
         document.getElementById('package-count').textContent = stats.totalPackages ?? stats.packageCount ?? 0;
         document.getElementById('owner-count').textContent = stats.totalOwners ?? stats.ownerCount ?? 0;
+        document.getElementById('yanked-count').textContent = stats.yankedCount ?? 0;
 
         // Display sync deltas
         const pkgDelta = stats.lastSyncPackages ?? 0;
@@ -192,6 +207,7 @@ moon build</code></pre>
       } catch (e) {
         document.getElementById('package-count').textContent = '-';
         document.getElementById('owner-count').textContent = '-';
+        document.getElementById('yanked-count').textContent = '-';
         document.getElementById('sync-time').textContent = 'Sync stats not yet available';
       }
     }
