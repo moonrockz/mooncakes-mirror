@@ -80,9 +80,15 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      - name: Clone mooncakes.io index for git serving
+        run: |
+          echo "Cloning mooncakes.io index..."
+          git clone --bare https://mooncakes.io/git/index mooncakes-index.git
+          echo "Index cloned successfully"
+
       - name: Create pages directory structure
         run: |
-          mkdir -p _site
+          mkdir -p _site/git
 
           # Copy the Vite build output from main branch
           if [ -d "main/src/dist" ]; then
@@ -90,28 +96,26 @@ jobs:
             echo "Copied Vite build output"
           fi
 
-          # Copy registry data (index, stats, yanked.json) from registry branch
-          if [ "${{ steps.registry-check.outputs.exists }}" == "true" ]; then
-            # Copy the git index
-            if [ -d "registry/git" ]; then
-              cp -r registry/git _site/
-              echo "Copied git index"
-            fi
+          # Copy the bare git repo for serving
+          cp -r mooncakes-index.git _site/git/index
+          cd _site/git/index
+          git update-server-info
+          cd ../../..
+          echo "Git index prepared for dumb HTTP protocol"
 
-            # Copy stats.json
+          # Copy stats and yanked.json from registry branch
+          if [ "${{ steps.registry-check.outputs.exists }}" == "true" ]; then
             if [ -f "registry/stats.json" ]; then
               cp registry/stats.json _site/
               echo "Copied stats.json"
             fi
 
-            # Copy yanked.json
             if [ -f "registry/yanked.json" ]; then
               cp registry/yanked.json _site/
               echo "Copied yanked.json"
             fi
           else
-            echo "No registry data available - deploying site only"
-            # Create placeholder stats.json
+            echo "No registry data available - creating placeholder"
             cat > _site/stats.json << 'EOF'
           {
             "lastSync": "pending",
@@ -131,7 +135,10 @@ jobs:
           fi
 
           echo "=== Final site structure ==="
-          find _site -type f | head -30
+          find _site -type f | head -50
+          echo ""
+          echo "=== Git index info/refs ==="
+          cat _site/git/index/info/refs || echo "refs not found"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

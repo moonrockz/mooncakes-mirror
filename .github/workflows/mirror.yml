@@ -121,25 +121,14 @@ jobs:
 
       - name: Prepare registry branch content
         run: |
-          mkdir -p registry-content/git/index
+          mkdir -p registry-content
 
-          # Copy the index (excluding .git directory to avoid nested repo issues)
-          rsync -av --exclude='.git' mooncakes-index/ registry-content/git/index/
-
-          # Initialize git and enable dumb HTTP protocol
-          cd registry-content/git/index
-          git init
-          git add -A
-          git commit -m "Index snapshot $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
-          git update-server-info
-          cd ../../..
-
-          # Copy stats files
+          # Copy stats files (the index itself will be cloned fresh by pages workflow)
           cp registry-data/stats.json registry-content/
           cp registry-data/yanked.json registry-content/
 
           echo "=== Registry content prepared ==="
-          find registry-content -type f | head -20
+          ls -la registry-content/
 
       - name: Push to registry branch
         run: |
