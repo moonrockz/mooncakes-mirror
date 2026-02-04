@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   root: "src",
+  base: "/mooncakes-mirror/",
   build: {
     outDir: "dist",
     emptyOutDir: true,
