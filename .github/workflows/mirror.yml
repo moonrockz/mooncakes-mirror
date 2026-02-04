@@ -66,11 +66,11 @@ jobs:
         run: |
           PACKAGE_COUNT=0
           OWNER_COUNT=0
-          if [ -d "data/index" ]; then
-            cd data/index
-            OWNER_COUNT=$(find . -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-            PACKAGE_COUNT=$(find . -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l)
-            cd ../..
+          # Count from the source index (mooncakes submodule)
+          SOURCE_INDEX="data/index/sources/mooncakes/user"
+          if [ -d "$SOURCE_INDEX" ]; then
+            OWNER_COUNT=$(find "$SOURCE_INDEX" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+            PACKAGE_COUNT=$(find "$SOURCE_INDEX" -name "*.index" -type f 2>/dev/null | wc -l)
           fi
           echo "packages=$PACKAGE_COUNT" >> $GITHUB_OUTPUT
           echo "owners=$OWNER_COUNT" >> $GITHUB_OUTPUT
@@ -116,12 +116,11 @@ jobs:
           TOTAL_OWNERS=0
           YANKED_COUNT=0
 
-          # Count total packages and owners in the index
-          if [ -d "data/index" ]; then
-            cd data/index
-            TOTAL_OWNERS=$(find . -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
-            TOTAL_PACKAGES=$(find . -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l)
-            cd ../..
+          # Count total packages and owners from the source index (mooncakes submodule)
+          SOURCE_INDEX="data/index/sources/mooncakes/user"
+          if [ -d "$SOURCE_INDEX" ]; then
+            TOTAL_OWNERS=$(find "$SOURCE_INDEX" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+            TOTAL_PACKAGES=$(find "$SOURCE_INDEX" -name "*.index" -type f 2>/dev/null | wc -l)
           fi
 
           # Calculate sync deltas
