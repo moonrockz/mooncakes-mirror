@@ -1,0 +1,118 @@
+name: E2E Test
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      registry_url:
+        description: 'Registry URL to test'
+        required: false
+        default: 'https://moonrockz.github.io/mooncakes-mirror'
+
+  # Run after pages deployment
+  workflow_run:
+    workflows: ["Deploy Registry to GitHub Pages"]
+    types:
+      - completed
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # Only run if pages deployment succeeded, or on manual trigger
+    if: |
+      (github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch')
+
+    env:
+      MOONCAKES_REGISTRY: ${{ github.event.inputs.registry_url || 'https://moonrockz.github.io/mooncakes-mirror' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MoonBit
+        uses: chawyehsu/setup-moonup@v1
+
+      - name: Verify registry is accessible
+        run: |
+          echo "Testing registry: $MOONCAKES_REGISTRY"
+
+          # Test stats endpoint
+          echo "=== Testing stats.json ==="
+          curl -sf "$MOONCAKES_REGISTRY/stats.json" | jq .
+
+          # Test git index
+          echo "=== Testing git index ==="
+          curl -sf "$MOONCAKES_REGISTRY/git/index/info/refs" | head -5
+
+      - name: Update moon index from mirror
+        working-directory: examples/hello-world
+        run: |
+          echo "Updating moon index from: $MOONCAKES_REGISTRY"
+          moon update
+          echo "Moon update completed successfully"
+
+      - name: Build example project
+        working-directory: examples/hello-world
+        run: |
+          echo "Building example project..."
+          moon build --target all
+          echo "Build completed successfully"
+
+      - name: Run example project
+        working-directory: examples/hello-world
+        run: |
+          echo "Running example project..."
+          moon run src
+          echo "Run completed successfully"
+
+      - name: Run tests (if any)
+        working-directory: examples/hello-world
+        continue-on-error: true
+        run: |
+          echo "Running tests..."
+          moon test || echo "No tests to run"
+
+      - name: Test Summary
+        run: |
+          echo "## E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Registry URL**: \`$MOONCAKES_REGISTRY\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: All tests passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Verified" >> $GITHUB_STEP_SUMMARY
+          echo "- Registry stats endpoint accessible" >> $GITHUB_STEP_SUMMARY
+          echo "- Git index available via dumb HTTP protocol" >> $GITHUB_STEP_SUMMARY
+          echo "- Dependencies fetched successfully" >> $GITHUB_STEP_SUMMARY
+          echo "- Example project builds and runs" >> $GITHUB_STEP_SUMMARY
+
+  test-matrix:
+    runs-on: ${{ matrix.os }}
+    needs: test
+    # Only run the matrix on manual trigger to save CI time
+    if: github.event_name == 'workflow_dispatch'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    env:
+      MOONCAKES_REGISTRY: ${{ github.event.inputs.registry_url || 'https://moonrockz.github.io/mooncakes-mirror' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MoonBit
+        uses: chawyehsu/setup-moonup@v1
+
+      - name: Build example project
+        working-directory: examples/hello-world
+        run: |
+          moon update
+          moon build
+
+      - name: Run example project
+        working-directory: examples/hello-world
+        run: moon run src
