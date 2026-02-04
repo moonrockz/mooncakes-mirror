@@ -42,107 +42,19 @@ jobs:
       - name: Create pages directory structure
         run: |
           mkdir -p _site/git
-          
+
           # Copy the index repository for Git HTTP protocol
           if [ -d "data/index" ]; then
             cp -r data/index _site/git/index
-            
+
             # Enable Git dumb HTTP protocol
             cd _site/git/index
             git update-server-info
             cd ../../..
           fi
-      
-      - name: Create index page
-        run: |
-          cat > _site/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>MoonCakes Mirror Registry</title>
-            <style>
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-                max-width: 800px;
-                margin: 50px auto;
-                padding: 0 20px;
-                line-height: 1.6;
-              }
-              h1 {
-                color: #333;
-                border-bottom: 2px solid #007acc;
-                padding-bottom: 10px;
-              }
-              code {
-                background: #f4f4f4;
-                padding: 2px 6px;
-                border-radius: 3px;
-                font-family: "Courier New", monospace;
-              }
-              pre {
-                background: #f4f4f4;
-                padding: 15px;
-                border-radius: 5px;
-                overflow-x: auto;
-              }
-              .info {
-                background: #e7f3ff;
-                padding: 15px;
-                border-left: 4px solid #007acc;
-                margin: 20px 0;
-              }
-              a {
-                color: #007acc;
-                text-decoration: none;
-              }
-              a:hover {
-                text-decoration: underline;
-              }
-            </style>
-          </head>
-          <body>
-            <h1>🌙 MoonCakes Mirror Registry</h1>
-            
-            <div class="info">
-              <strong>Status:</strong> Active<br>
-              <strong>Source:</strong> <a href="https://mooncakes.io">mooncakes.io</a><br>
-              <strong>Repository:</strong> <a href="https://github.com/moonrockz/mooncakes-mirror">github.com/moonrockz/mooncakes-mirror</a>
-            </div>
-            
-            <h2>Usage</h2>
-            <p>To use this mirror registry with your MoonBit projects, set the <code>MOONCAKES_REGISTRY</code> environment variable:</p>
-            
-            <pre><code>export MOONCAKES_REGISTRY=https://moonrockz.github.io/mooncakes-mirror</code></pre>
-            
-            <p>Then use the Moon CLI as usual:</p>
-            
-            <pre><code>moon new my-project
-cd my-project
-moon add moonbitlang/core
-moon build</code></pre>
-            
-            <h2>About</h2>
-            <p>This is a mirror of the <a href="https://mooncakes.io">mooncakes.io</a> registry for MoonBit packages. It is automatically synchronized daily and hosted on GitHub Pages.</p>
-            
-            <p>The mirror is created using <a href="https://github.com/moonrockz/moonbit-registry-tools">moonbit-registry-tools</a>.</p>
-            
-            <h2>Endpoints</h2>
-            <ul>
-              <li><code>/git/index</code> - Git index repository</li>
-              <li><code>/user/{username}/{package}/{version}.zip</code> - Package downloads (proxied to mooncakes.io)</li>
-            </ul>
-            
-            <h2>Links</h2>
-            <ul>
-              <li><a href="https://www.moonbitlang.com/">MoonBit Official Website</a></li>
-              <li><a href="https://mooncakes.io">MoonCakes Registry</a></li>
-              <li><a href="https://github.com/moonrockz/moonbit-registry-tools">MoonBit Registry Tools</a></li>
-            </ul>
-          </body>
-          </html>
-          EOF
+
+          # Copy the index page
+          cp index.html _site/index.html
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
