@@ -37,9 +37,11 @@ git clone https://github.com/moonrockz/mooncakes-mirror.git
 cd mooncakes-mirror
 
 # Install moonbit-registry-tools (using mise)
+# Note: The -g flag installs globally and affects system-wide mise configuration
+# For local installation, omit the -g flag: mise use "github:moonrockz/moonbit-registry-tools@latest"
 mise use -g "github:moonrockz/moonbit-registry-tools@latest"
 
-# Or download from releases:
+# Or download from releases and add to PATH:
 # https://github.com/moonrockz/moonbit-registry-tools/releases
 
 # Initialize the registry (first time only)

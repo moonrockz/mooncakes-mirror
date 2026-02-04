@@ -105,7 +105,9 @@ jobs:
           # Count packages in the index
           if [ -d "data/index" ]; then
             cd data/index
-            # Count the number of package directories (each package has its own directory)
+            # Count the number of package directories
+            # Expected structure: data/index/{username}/{package}/
+            # This finds directories at exactly 2 levels deep (username/package)
             PACKAGE_COUNT=$(find . -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l)
             cd ../..
             echo "**Packages in Index:** $PACKAGE_COUNT" >> mirror-stats.txt
