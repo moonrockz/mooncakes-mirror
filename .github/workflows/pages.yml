@@ -58,6 +58,11 @@ jobs:
 
           # Copy the index page
           cp index.html _site/index.html
+
+          # Copy stats.json for the dashboard
+          if [ -f "data/stats.json" ]; then
+            cp data/stats.json _site/stats.json
+          fi
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

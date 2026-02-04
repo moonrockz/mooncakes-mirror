@@ -85,45 +85,48 @@ jobs:
           echo "Mirroring moonbitlang packages..."
           moonbit-registry mirror "moonbitlang/*"
       
-      - name: Commit and push index updates
+      - name: Generate registry statistics
         run: |
-          git add data/index/
+          LAST_SYNC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          PACKAGE_COUNT=0
+          OWNER_COUNT=0
+
+          # Count packages and owners in the index
+          if [ -d "data/index" ]; then
+            cd data/index
+            # Count owners (directories at depth 1)
+            OWNER_COUNT=$(find . -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+            # Count packages (directories at depth 2)
+            PACKAGE_COUNT=$(find . -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l)
+            cd ../..
+          fi
+
+          # Generate JSON stats file
+          cat > data/stats.json << 'STATSEOF'
+          {
+            "lastSync": "LAST_SYNC_PLACEHOLDER",
+            "packageCount": PACKAGE_COUNT_PLACEHOLDER,
+            "ownerCount": OWNER_COUNT_PLACEHOLDER,
+            "source": "mooncakes.io",
+            "mirrorUrl": "https://moonrockz.github.io/mooncakes-mirror"
+          }
+          STATSEOF
+
+          # Replace placeholders with actual values
+          sed -i "s/LAST_SYNC_PLACEHOLDER/$LAST_SYNC/" data/stats.json
+          sed -i "s/PACKAGE_COUNT_PLACEHOLDER/$PACKAGE_COUNT/" data/stats.json
+          sed -i "s/OWNER_COUNT_PLACEHOLDER/$OWNER_COUNT/" data/stats.json
+
+          # Pretty print for logs
+          echo "Registry Statistics:"
+          cat data/stats.json
+
+      - name: Commit and push all updates
+        run: |
+          git add data/index/ data/stats.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update registry index - $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            git commit -m "Update registry index and stats - $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
             git push origin main
           fi
-      
-      - name: Generate registry statistics
-        run: |
-          echo "## Registry Mirror Statistics" > mirror-stats.txt
-          echo "" >> mirror-stats.txt
-          echo "**Last Updated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> mirror-stats.txt
-          echo "" >> mirror-stats.txt
-
-          # Count packages in the index
-          if [ -d "data/index" ]; then
-            cd data/index
-            # Count the number of package directories
-            # Expected structure: data/index/{username}/{package}/
-            # This finds directories at exactly 2 levels deep (username/package)
-            PACKAGE_COUNT=$(find . -mindepth 2 -maxdepth 2 -type d 2>/dev/null | wc -l)
-            cd ../..
-            echo "**Packages in Index:** $PACKAGE_COUNT" >> mirror-stats.txt
-          else
-            echo "**Packages in Index:** 0" >> mirror-stats.txt
-          fi
-
-          echo "" >> mirror-stats.txt
-          echo "_Note: Package .zip files are not stored in this repository._" >> mirror-stats.txt
-          echo "_They are proxied from mooncakes.io when requested._" >> mirror-stats.txt
-
-          cat mirror-stats.txt
-      
-      - name: Upload statistics
-        uses: actions/upload-artifact@v4
-        with:
-          name: mirror-statistics
-          path: mirror-stats.txt
-          retention-days: 30
