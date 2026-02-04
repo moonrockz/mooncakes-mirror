@@ -1,9 +1,10 @@
-# Exclude cached package files (they can be regenerated)
+# Registry data (lives in registry-index branch)
+data/stats.json
+data/yanked.json
 data/packages/*
 !data/packages/.gitkeep
-
-# Keep the index (this should be committed)
-!data/index/
+data/index/*
+!data/index/README.md
 
 # Claude Code local settings
 .claude/settings.local.json
