@@ -4,4 +4,24 @@ data/packages/*
 
 # Keep the index (this should be committed)
 !data/index/
+
+# Claude Code local settings
 .claude/settings.local.json
+
+# MoonBit build artifacts
+target/
+_build/
+.mooncakes/
+
+# Node.js
+node_modules/
+package-lock.json
+bun.lock
+
+# Vite build output
+src/main.js
+src/main.js.map
+src/dist/
+
+# Trace files
+trace.json

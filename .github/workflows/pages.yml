@@ -38,13 +38,33 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
+      - name: Setup MoonBit
+        uses: moonbitlang/setup-moonbit@v1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          moon update
+          moon add Yoorkin/rabbit-tea
+          npm install
+
+      - name: Build MoonBit site
+        run: npm run build
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      
+
       - name: Create pages directory structure
         run: |
           mkdir -p _site/git
+
+          # Copy the Vite build output
+          cp -r src/dist/* _site/
 
           # Copy the index repository for Git HTTP protocol
           if [ -d "data/index" ]; then
@@ -56,10 +76,6 @@ jobs:
             cd ../../..
           fi
 
-          # Copy the index page and yanked page
-          cp index.html _site/index.html
-          cp yanked.html _site/yanked.html
-
           # Copy stats.json and yanked.json for the dashboard
           if [ -f "data/stats.json" ]; then
             cp data/stats.json _site/stats.json
@@ -67,6 +83,9 @@ jobs:
           if [ -f "data/yanked.json" ]; then
             cp data/yanked.json _site/yanked.json
           fi
+
+          # Copy the yanked.html page (still using vanilla HTML for now)
+          cp yanked.html _site/yanked.html
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
