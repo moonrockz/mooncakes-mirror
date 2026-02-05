@@ -1,8 +1,8 @@
 /**
- * MoonCakes Mirror Registry - TypeScript Glue Code
+ * mooncakes Mirror Registry - TypeScript Glue Code
  *
  * This file provides TypeScript utilities and type definitions
- * for the MoonBit/rabbit-tea application.
+ * for the moonbit/rabbit-tea application.
  */
 
 // Type definitions for the registry data
@@ -40,7 +40,7 @@ export interface YankedData {
   generatedAt: string;
 }
 
-// Utility functions that can be called from MoonBit via FFI
+// Utility functions that can be called from moonbit via FFI
 export function formatDate(isoString: string): string {
   try {
     const date = new Date(isoString);

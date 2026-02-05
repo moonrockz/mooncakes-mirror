@@ -1,5 +1,5 @@
 ///|
-/// Shared types for the MoonCakes Mirror Registry
+/// Shared types for the Mooncakes Mirror Registry
 
 ///|
 /// Stats data from the registry

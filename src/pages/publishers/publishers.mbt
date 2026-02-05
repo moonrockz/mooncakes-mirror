@@ -88,12 +88,12 @@ fn featured_publishers() -> @html.Html[Msg] {
   div(class="mb-8", [
     h3(class="text-lg font-semibold text-slate-800 mb-4", [text("Featured Publishers")]),
     div(class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4", [
-      publisher_card("moonbitlang", "Official MoonBit packages"),
+      publisher_card("moonbitlang", "Official Moonbit packages"),
       publisher_card("peter-jerry-ye", "Community contributor"),
       publisher_card("Yoorkin", "rabbit-tea framework author"),
-      publisher_card("chawyehsu", "MoonBit tooling"),
+      publisher_card("chawyehsu", "Moonbit tooling"),
       publisher_card("notch1p", "Community packages"),
-      publisher_card("oboard", "MoonBit tools"),
+      publisher_card("oboard", "Moonbit tools"),
     ]),
   ])
 }
@@ -106,7 +106,7 @@ fn publishers_info(stats : @shared.Stats) -> @html.Html[Msg] {
       div([
         h3(class="text-lg font-semibold text-slate-800 mb-2", [text("About Publishers")]),
         p(class="text-sm text-slate-600", [
-          text("Publishers are users who have published packages to the MoonCakes registry. This mirror tracks all "),
+          text("Publishers are users who have published packages to the Mooncakes registry. This mirror tracks all "),
           span(class="font-semibold text-indigo-600", [text(stats.total_owners.to_string())]),
           text(" publishers and their "),
           span(class="font-semibold text-indigo-600", [text(stats.total_packages.to_string())]),
@@ -149,7 +149,7 @@ fn search_input(query : String) -> @html.Html[Msg] {
 /// Render the publishers page view
 pub fn view(model : Model) -> @html.Html[Msg] {
   div(class="max-w-6xl mx-auto px-4 sm:px-6 py-8", [
-    @shared.page_header("Publishers", "Package publishers in the MoonCakes registry"),
+    @shared.page_header("Publishers", "Package publishers in the Mooncakes registry"),
     // Loading state
     if model.loading {
       @shared.loading_spinner()

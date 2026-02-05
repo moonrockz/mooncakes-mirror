@@ -1,5 +1,5 @@
 ///|
-/// MoonCakes Mirror Registry
+/// Mooncakes Mirror Registry
 /// Multi-page application using nested TEA pattern
 
 using @html {div}
@@ -10,6 +10,7 @@ enum Page {
   Home(@home.Model)
   Packages(@packages.Model)
   Publishers(@publishers.Model)
+  SelfHost(@selfhost.Model)
 }
 
 ///|
@@ -26,6 +27,7 @@ enum Msg {
   HomeMsg(@home.Msg)
   PackagesMsg(@packages.Msg)
   PublishersMsg(@publishers.Msg)
+  SelfHostMsg(@selfhost.Msg)
 }
 
 ///|
@@ -38,6 +40,8 @@ fn parse_route(url : @url.Url) -> String {
         "packages"
       } else if fragment.has_prefix("/publishers") {
         "publishers"
+      } else if fragment.has_prefix("/selfhost") {
+        "selfhost"
       } else {
         "home"
       }
@@ -66,6 +70,11 @@ fn init_page(route : String) -> (@tea.Cmd[Msg], Model) {
       let (cmd, page_model) = @publishers.page_init()
       let model : Model = { current_page: Publishers(page_model) }
       (@tea.Cmd::map(cmd, fn(msg) { PublishersMsg(msg) }), model)
+    }
+    "selfhost" => {
+      let (cmd, page_model) = @selfhost.page_init()
+      let model : Model = { current_page: SelfHost(page_model) }
+      (@tea.Cmd::map(cmd, fn(msg) { SelfHostMsg(msg) }), model)
     }
     _ => {
       let (cmd, page_model) = @home.page_init()
@@ -115,6 +124,15 @@ fn update(msg : Msg, model : Model) -> (@tea.Cmd[Msg], Model) {
         _ => (@tea.none(), model)
       }
     }
+    SelfHostMsg(page_msg) => {
+      match model.current_page {
+        SelfHost(page_model) => {
+          let (cmd, new_page_model) = @selfhost.update(page_msg, page_model)
+          (@tea.Cmd::map(cmd, fn(m) { SelfHostMsg(m) }), { current_page: SelfHost(new_page_model) })
+        }
+        _ => (@tea.none(), model)
+      }
+    }
   }
 }
 
@@ -125,6 +143,7 @@ fn view(model : Model) -> @html.Html[Msg] {
     Home(_) => "home"
     Packages(_) => "packages"
     Publishers(_) => "publishers"
+    SelfHost(_) => "selfhost"
   }
 
   div(class="min-h-screen flex flex-col", [
@@ -136,6 +155,7 @@ fn view(model : Model) -> @html.Html[Msg] {
         Home(page_model) => @html.Html::map(@home.view(page_model), fn(msg) { HomeMsg(msg) })
         Packages(page_model) => @html.Html::map(@packages.view(page_model), fn(msg) { PackagesMsg(msg) })
         Publishers(page_model) => @html.Html::map(@publishers.view(page_model), fn(msg) { PublishersMsg(msg) })
+        SelfHost(page_model) => @html.Html::map(@selfhost.view(page_model), fn(msg) { SelfHostMsg(msg) })
       },
     ]),
     // Footer

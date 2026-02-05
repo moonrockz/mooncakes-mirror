@@ -8,6 +8,7 @@
     { "path": "moonrockz/mooncakes-mirror/shared", "alias": "shared" },
     { "path": "moonrockz/mooncakes-mirror/pages/home", "alias": "home" },
     { "path": "moonrockz/mooncakes-mirror/pages/packages", "alias": "packages" },
-    { "path": "moonrockz/mooncakes-mirror/pages/publishers", "alias": "publishers" }
+    { "path": "moonrockz/mooncakes-mirror/pages/publishers", "alias": "publishers" },
+    { "path": "moonrockz/mooncakes-mirror/pages/selfhost", "alias": "selfhost" }
   ]
 }

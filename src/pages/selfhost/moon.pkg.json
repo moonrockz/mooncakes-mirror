@@ -1,0 +1,7 @@
+{
+  "import": [
+    { "path": "Yoorkin/rabbit-tea", "alias": "tea" },
+    { "path": "Yoorkin/rabbit-tea/html", "alias": "html" },
+    { "path": "moonrockz/mooncakes-mirror/shared", "alias": "shared" }
+  ]
+}

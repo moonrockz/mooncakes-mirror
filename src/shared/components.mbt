@@ -1,19 +1,32 @@
 ///|
 /// Shared UI components
 
-using @html {div, span, text, a}
+using @html {div, span, text, a, node, attribute}
+
+///|
+/// FontAwesome icon component
+/// Usage: icon("fa-solid fa-home") or icon("fa-brands fa-github")
+pub fn[Msg] icon(icon_class : String) -> @html.Html[Msg] {
+  node("i", [attribute("class", icon_class)], [])
+}
+
+///|
+/// Icon with additional classes
+pub fn[Msg] icon_styled(icon_class : String, extra_class : String) -> @html.Html[Msg] {
+  node("i", [attribute("class", "\{icon_class} \{extra_class}")], [])
+}
 
 ///|
 /// Navigation bar component
 pub fn[Msg] navbar(current_page : String) -> @html.Html[Msg] {
-  let nav_link = fn(href : String, label : String, is_active : Bool) -> @html.Html[Msg] {
-    let base_class = "px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+  let nav_link = fn(href : String, icon_class : String, label : String, is_active : Bool) -> @html.Html[Msg] {
+    let base_class = "px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
     let active_class = if is_active {
       "\{base_class} bg-indigo-100 text-indigo-700"
     } else {
       "\{base_class} text-slate-600 hover:text-indigo-600 hover:bg-slate-100"
     }
-    a(href=href, class=active_class, [text(label)])
+    a(href=href, class=active_class, [icon(icon_class), text(label)])
   }
 
   // Use div with role="navigation" since nav element not available
@@ -23,15 +36,16 @@ pub fn[Msg] navbar(current_page : String) -> @html.Html[Msg] {
         // Logo
         a(href="#/home", class="flex items-center gap-2", [
           div(class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center", [
-            span(class="text-white font-bold text-sm", [text("M")]),
+            icon_styled("fa-solid fa-cube", "text-white"),
           ]),
-          span(class="font-semibold text-slate-800", [text("MoonCakes Mirror")]),
+          span(class="font-semibold text-slate-800", [text("Mooncakes Mirror")]),
         ]),
         // Nav links
         div(class="flex items-center gap-2", [
-          nav_link("#/home", "Home", current_page == "home"),
-          nav_link("#/packages", "Packages", current_page == "packages"),
-          nav_link("#/publishers", "Publishers", current_page == "publishers"),
+          nav_link("#/home", "fa-solid fa-house", "Home", current_page == "home"),
+          nav_link("#/packages", "fa-solid fa-box", "Packages", current_page == "packages"),
+          nav_link("#/publishers", "fa-solid fa-users", "Publishers", current_page == "publishers"),
+          nav_link("#/selfhost", "fa-solid fa-server", "Self-Host", current_page == "selfhost"),
         ]),
       ]),
     ]),
@@ -111,7 +125,7 @@ pub fn[Msg] loading_spinner() -> @html.Html[Msg] {
 pub fn[Msg] error_alert(message : String) -> @html.Html[Msg] {
   div(class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6", [
     div(class="flex items-center gap-3", [
-      span(class="text-red-500 text-xl", [text("!")]),
+      icon_styled("fa-solid fa-circle-exclamation", "text-red-500 text-xl"),
       div([
         div(class="font-medium text-red-800", [text("Error")]),
         div(class="text-sm text-red-600", [text(message)]),
@@ -126,17 +140,21 @@ pub fn[Msg] footer() -> @html.Html[Msg] {
   div(class="border-t border-slate-200 mt-12 py-8", [
     div(class="max-w-6xl mx-auto px-4 sm:px-6", [
       div(class="flex flex-col sm:flex-row items-center justify-between gap-4", [
-        div(class="text-sm text-slate-500", [
+        div(class="text-sm text-slate-500 flex items-center gap-1", [
           text("Built with "),
+          icon_styled("fa-solid fa-heart", "text-red-400"),
+          text(" using "),
           a(href="https://mooncakes.io/docs/Yoorkin/rabbit-tea", class="text-indigo-600 hover:underline", [text("rabbit-tea")]),
           text(" and "),
-          a(href="https://moonbitlang.com", class="text-indigo-600 hover:underline", [text("MoonBit")]),
+          a(href="https://moonbitlang.com", class="text-indigo-600 hover:underline", [text("Moonbit")]),
         ]),
         div(class="flex items-center gap-4", [
-          a(href="https://github.com/moonrockz/mooncakes-mirror", class="text-slate-400 hover:text-slate-600 transition-colors", [
+          a(href="https://github.com/moonrockz/mooncakes-mirror", class="text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-2", [
+            icon("fa-brands fa-github"),
             text("GitHub"),
           ]),
-          a(href="https://mooncakes.io", class="text-slate-400 hover:text-slate-600 transition-colors", [
+          a(href="https://mooncakes.io", class="text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-2", [
+            icon("fa-solid fa-cube"),
             text("mooncakes.io"),
           ]),
         ]),
