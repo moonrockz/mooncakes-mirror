@@ -1,0 +1,1 @@
+{"name": "mizchi/llm", "version": "0.1.0", "deps": {}, "source": "src", "preferred-target": "js", "readme": "README.mbt.md", "repository": "", "license": "MIT", "keywords": ["llm", "ai", "client"], "description": "Pure MoonBit LLM client library", "checksum": "76c7466e2f37529a28a15f26a5bce629ab3ec058b9f71846f20e024a12d29dc5", "created_at": "2026-02-06T13:51:37.416958+00:00"}
