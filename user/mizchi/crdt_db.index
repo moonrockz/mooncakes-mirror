@@ -1,0 +1,1 @@
+{"name": "mizchi/crdt_db", "version": "0.1.1", "source": "src", "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "EG-Walker inspired Local-First DB Sync Engine", "checksum": "f43ebdabb453f64501001fb5372e9f4ec6ff526ea4f8dcc1dd19b41ea544f396", "created_at": "2026-02-07T05:59:16.761884+00:00"}
