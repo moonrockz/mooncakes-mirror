@@ -1,0 +1,1 @@
+{"name": "mizchi/wasi", "version": "0.1.0", "source": ".", "repository": "https://github.com/mizchi/wasi.mbt", "license": "MIT", "description": "WASIp2 (0.2.9) bindings for MoonBit", "checksum": "3ba73beb7fccf9bd05645f2fe4ccbd9ed63e0dab529c68824765a16e86889c91", "created_at": "2026-02-06T05:17:19.496391+00:00"}
