@@ -1,0 +1,1 @@
+{"name": "hackwaly/fastcc", "version": "0.1.0", "deps": {"moonbitlang/x": "0.4.38"}, "source": "src", "license": "LGPL-2.1-or-later", "preferred-target": "native", "include": ["moon.mod.json", "README.md", "CHANGELOG.md", "LICENSE", "src"], "checksum": "cf292a907a7b90dfb48472b2f1e72ee87c1006f9a1d77797146125b2cb350a3f", "created_at": "2026-02-14T07:47:40.621598+00:00"}
