@@ -1,0 +1,1 @@
+{"name": "tonyfettes/create-moonbit-raylib-android-app", "version": "0.1.0", "license": "Apache-2.0", "deps": {"moonbitlang/async": "0.16.7", "moonbitlang/x": "0.4.40"}, "preferred-target": "native", "checksum": "c7489b57870aceb00d4a8478dac7b4176b3071bc0fa592b61f182e8315e38f56", "created_at": "2026-03-02T08:26:07.453861+00:00"}
