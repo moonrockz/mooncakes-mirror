@@ -1,0 +1,1 @@
+{"name": "cg-zhou/bezier-easing", "version": "0.1.0", "description": "MoonBit port of bezier-easing", "deps": {}, "source": "src", "readme": "README.mbt.md", "license": "MIT", "keywords": ["bezier", "easing", "animation"], "checksum": "98d1cfd9766e7d307f58b67c6a9dce6a75be4ece9d2837e12639b40bd60a88bb", "created_at": "2026-03-03T06:29:06.158053+00:00"}
