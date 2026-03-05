@@ -1,0 +1,1 @@
+{"name": "chensuiyi/t22", "version": "0.1.0", "deps": {"moonbitlang/async": "0.16.7"}, "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "c27cbb54c418ba6948683fdbd8e4831875e121363082942c05674f0ac5ebeb6b", "created_at": "2026-03-04T18:38:15.283272+00:00"}
