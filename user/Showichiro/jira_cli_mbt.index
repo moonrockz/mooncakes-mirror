@@ -1,0 +1,1 @@
+{"name": "Showichiro/jira_cli_mbt", "version": "0.1.0", "deps": {"mizchi/js": "0.10.14"}, "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "checksum": "388a9d2d25dc586d4984cdebb6bad579eaab04d32bb63207b3c569e443a0c248", "created_at": "2026-03-13T16:06:12.599459+00:00"}
