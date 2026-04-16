@@ -1,0 +1,1 @@
+{"name": "tonyfettes/tun-poc-proto", "version": "0.1.0", "deps": {"moonbitlang/x": "0.4.43"}, "readme": "README.md", "repository": "https://github.com/moonbit-community/tonyfettes-tun-poc", "license": "Apache-2.0", "preferred-target": "native", "checksum": "186906446ab575a20150926721e258e149aea933066eac0218a3095fae29d034", "created_at": "2026-04-15T08:54:11.750344+00:00"}
