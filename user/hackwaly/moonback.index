@@ -1,1 +1,2 @@
 {"name": "hackwaly/moonback", "version": "0.1.0", "deps": {"moonbitlang/async": "0.18.0"}, "license": "Apache-2.0", "preferred-target": "native", "checksum": "2d933b613bb6873725eededa91738941e001c61dee1211f98d68c9f47c45613f", "created_at": "2026-04-20T10:03:23.383982+00:00"}
+{"name": "hackwaly/moonback", "version": "0.1.1", "deps": {"moonbitlang/async": "0.18.0"}, "license": "Apache-2.0", "preferred-target": "native", "checksum": "73a9249dd850b17fb4aaf2d3624a419c0dc76131f8345783de362ccba676be7b", "created_at": "2026-04-20T13:00:38.847068+00:00"}
