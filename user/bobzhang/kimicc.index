@@ -1,0 +1,1 @@
+{"name": "bobzhang/kimicc", "version": "0.1.0", "readme": "README.md", "repository": "https://github.com/bobzhang/kimicc", "license": "Apache-2.0", "deps": {"moonbitlang/async": "0.18.1"}, "source": ".", "preferred-target": "native", "checksum": "486c58d8e9757d5029274dcbc35580bc6b9401911beb073266d07f61fc89103b", "created_at": "2026-05-05T23:27:49.270590+00:00"}
