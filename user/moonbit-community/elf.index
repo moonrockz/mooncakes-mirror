@@ -1,0 +1,1 @@
+{"name": "moonbit-community/elf", "version": "0.0.1", "deps": {"moonbitlang/x": "0.4.43"}, "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "A MoonBit library for reading ELF object files", "checksum": "82a9ff515aeb10bd38043c0951790a280b49334781ef7c266f18f9a6655f8fb1", "created_at": "2026-05-15T09:45:51.950306+00:00"}
