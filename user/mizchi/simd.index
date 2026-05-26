@@ -1,1 +1,2 @@
 {"name": "mizchi/simd", "version": "0.1.1", "readme": "README.md", "repository": "https://github.com/mizchi/simd", "license": "MIT", "checksum": "fc396176d22d7939a73d68f97576f2c53506d33fa1a30393c2bb9511b975bbdb", "created_at": "2026-05-26T10:22:08.566164+00:00"}
+{"name": "mizchi/simd", "version": "0.2.0", "readme": "README.md", "repository": "https://github.com/mizchi/simd", "license": "MIT", "checksum": "f551682d9be353f08a90ffded7f891b7fae762dff1962473d19d80eec28fe71d", "created_at": "2026-05-26T10:24:47.578060+00:00"}
