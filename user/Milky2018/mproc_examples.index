@@ -1,0 +1,1 @@
+{"name": "Milky2018/mproc_examples", "version": "0.1.0", "readme": "README.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "deps": {"Milky2018/mproc_gen": "0.1.0", "moonbitlang/x": "0.4.43"}, "checksum": "c995837f16832068dad1a583e677436b8f8d9143343b0f1b976e4cb16b2fbacf", "created_at": "2026-05-28T05:19:29.489497+00:00"}
