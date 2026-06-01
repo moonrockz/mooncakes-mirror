@@ -1,0 +1,1 @@
+{"name": "DzmingLi/decimal", "version": "0.1.0", "license": "Apache-2.0", "description": "Arbitrary-precision decimal arithmetic for MoonBit", "readme": "README.md", "repository": "https://github.com/DzmingLi/moonbit-decimal", "source": "src", "checksum": "7c6cc06b8c6de8f85e737b7a102aa526318976cd7962d084d0766f77c18233a7", "created_at": "2026-06-01T03:50:15.988294+00:00"}
