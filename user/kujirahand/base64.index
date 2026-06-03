@@ -1,0 +1,1 @@
+{"name": "kujirahand/base64", "version": "0.1.0", "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": ["base64", "encoding", "decoding"], "description": "Base64 encoding and decoding library", "checksum": "95c452b1bdb240b1e7f7afa24076a8faae7d51b8cc1b71fb8185f228c8dbcfd9", "created_at": "2026-06-03T07:11:55.773619+00:00"}
