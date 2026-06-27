@@ -1,0 +1,1 @@
+{"name": "wangmingfa/promptx", "version": "0.1.0", "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "description": "", "deps": {"moonbitlang/async": "0.20.0", "mizchi/tui": "0.10.0"}, "preferred_target": "native", "checksum": "9331fc58cd89fb1ecffa5b0c2de346dd05fdf84d59bb21fda42e03a8cb618c29", "created_at": "2026-06-27T15:39:58.448633+00:00"}
