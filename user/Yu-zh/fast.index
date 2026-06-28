@@ -1,0 +1,1 @@
+{"name": "Yu-zh/fast", "version": "0.1.0", "readme": "README.mbt.md", "repository": "https://github.com/Yu-zh/fast", "license": "Apache-2.0", "keywords": [], "preferred_target": "wasm-gc", "description": "", "checksum": "3a19fd55f78af070ab48b10c7e2c9e0d224525b5f83eef19c6004d2c1dd0f51e", "created_at": "2026-06-27T15:51:19.294186+00:00"}
