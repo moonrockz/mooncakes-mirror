@@ -1,0 +1,1 @@
+{"name": "himeno/test", "version": "0.1.0", "readme": "README.mbt.md", "repository": "", "license": "Apache-2.0", "keywords": [], "preferred_target": "wasm-gc", "description": "", "checksum": "7d7a2acafb8d6ea9da93a7a0612610ea48c68d1ed2c9203058d36d3d7a339abb", "created_at": "2026-07-09T03:03:50.322799+00:00"}
