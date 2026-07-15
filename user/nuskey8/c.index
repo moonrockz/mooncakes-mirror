@@ -1,0 +1,1 @@
+{"name": "nuskey8/c", "version": "0.1.0", "readme": "README.mbt.md", "repository": "", "license": "MIT", "keywords": [], "preferred_target": "native", "description": "C FFI helper for Moonbit", "checksum": "544fa2975f278637e09c9635f98737af563408d28ffa1ad268498a73a4b01698", "created_at": "2026-07-15T13:12:00.536888+00:00"}
