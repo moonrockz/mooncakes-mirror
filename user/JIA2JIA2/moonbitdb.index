@@ -1,1 +1,2 @@
 {"name": "JIA2JIA2/moonbitdb", "version": "0.1.0", "license": "MIT", "deps": {"moonbitlang/x": "0.4.38"}, "checksum": "c91a38e211bc63b0f893b5adb1d05d6422123d3687039d4e41a4c8edf949268e", "created_at": "2026-07-11T18:55:15.820249+00:00"}
+{"name": "JIA2JIA2/moonbitdb", "version": "0.1.1", "license": "Apache-2.0", "checksum": "7da2fa05a6652d036faa20dc7fc05cceb8057401466d59933f618a3581654240", "created_at": "2026-07-19T06:33:58.665651+00:00"}
