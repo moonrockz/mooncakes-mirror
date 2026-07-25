@@ -1,0 +1,1 @@
+{"name": "Areo-Joe/webidl", "version": "0.1.0", "readme": "README.mbt.md", "repository": "", "license": "MIT", "keywords": [], "preferred_target": "native", "description": "", "deps": {"moonbitlang/async": "0.20.2"}, "checksum": "3088bc3737d39fed1d08d8bec042b3703980c2fe1fcbdb5eef4895536b3d5507", "created_at": "2026-07-25T15:01:03.804918+00:00"}
