@@ -1,0 +1,1 @@
+{"name": "vectie/moonedit", "version": "0.1.0", "license": "Apache-2.0", "deps": {"moonbitlang/x": "0.4.46"}, "checksum": "038024ea445d0889c03d444ff3a7ca74f49396bbb8ad7993e67c361f7db6568c", "created_at": "2026-08-03T10:19:12.413602+00:00"}
