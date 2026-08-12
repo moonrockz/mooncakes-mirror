@@ -1,0 +1,1 @@
+{"name": "lampclaw/minimoon", "version": "0.0.1-rc.1", "readme": "README.mbt.md", "license": "Apache-2.0", "description": "Placeholder package for Minimoon, MoonBit for WeChat MiniApp Skyline.", "source": "src", "exclude": ["_build"], "checksum": "6a3855f61afb81822691a7387644c650b73b41a6ce53853b4d5d75b8cf28b00f", "created_at": "2026-08-12T05:39:27.553391+00:00"}
