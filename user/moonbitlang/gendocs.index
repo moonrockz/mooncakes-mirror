@@ -1,0 +1,1 @@
+{"name": "moonbitlang/gendocs", "version": "0.1.0", "license": "Apache-2.0", "deps": {"moonbitlang/x": "0.4.50"}, "checksum": "e3b41656806e917d8196e0d791b5b35512aac89c617ea3f2ca60a22d572c10ef", "created_at": "2026-08-19T10:53:23.506719+00:00"}
