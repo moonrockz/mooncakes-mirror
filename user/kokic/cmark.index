@@ -1,0 +1,1 @@
+{"name": "kokic/cmark", "version": "0.1.1", "readme": "README.md", "repository": "https://codeberg.org/kokic/obsmark", "license": "AGPL-3.0", "keywords": [], "description": "A port of pulldown-cmark's parser to MoonBit.", "preferred_target": "native", "checksum": "fd58b2f168917a1c89b2f85e874b9038c6187f70e4acf67fad3ad1c6d5f47998", "created_at": "2026-08-19T10:01:03.889229+00:00"}
