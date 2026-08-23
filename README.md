@@ -1,5 +1,8 @@
 # mooncakes-mirror
 
+> [!WARNING]
+> This mirror is temporarily paused until we can revisit the setup and approach as MoonBit continues to advance.
+
 A mirror of the [mooncakes.io](https://mooncakes.io) package registry for MoonBit.
 
 ## What is this?
@@ -25,14 +28,14 @@ moon build
 
 ## How it works
 
-1. **Automated Mirroring**: A GitHub Actions workflow runs daily to sync packages from mooncakes.io
+1. **Manual Mirroring**: A GitHub Actions workflow can be run manually to sync packages from mooncakes.io while the regular schedule is paused
 2. **Index Storage**: The package index is stored in the `data/index/` directory and committed to this repository
 3. **GitHub Pages**: The index is served via GitHub Pages at `https://moonrockz.github.io/mooncakes-mirror`
 4. **Package Downloads**: Package `.zip` files are proxied through to mooncakes.io (not stored in this repository)
 
 ## Manual Mirror
 
-You can manually trigger a mirror operation:
+You can manually trigger a mirror operation while the mirror remains paused:
 
 1. Go to the [Actions tab](https://github.com/moonrockz/mooncakes-mirror/actions/workflows/mirror.yml)
 2. Click "Run workflow"
