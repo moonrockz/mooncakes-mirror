@@ -1,0 +1,5 @@
+import {
+  "Yoorkin/rabbit-tea" @tea,
+  "Yoorkin/rabbit-tea/html",
+  "moonrockz/mooncakes-mirror/shared",
+}
