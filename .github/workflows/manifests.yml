@@ -1,0 +1,246 @@
+name: Archive Manifests
+
+on:
+  # Run after each successful mirror run, for the new versions
+  workflow_run:
+    workflows: ["Mirror Mooncakes Registry"]
+    types:
+      - completed
+
+  # Manual trigger, for the backfill
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Largest number of versions to add in this run'
+        required: false
+        default: '10000'
+      packages:
+        description: "Only packages that match these globs, separated by spaces (for example 'moonbitlang/*')"
+        required: false
+        default: ''
+
+# The same group as mirror.yml: only one of the two pushes to
+# moonrockz/mooncakes-index at a time
+concurrency:
+  group: mirror
+  cancel-in-progress: false
+
+# An archive manifest records the entries of a published zip in archive
+# order, with their SHA-256 and size. The proxy of moonbit-registry-tools uses
+# them to check a zip that it rebuilds from GitHub when mooncakes.io is down.
+# They are at manifests/user/<owner>/<pkg>.manifest in moonrockz/mooncakes-index.
+# moon reads only user/<owner>/<pkg>.index, so it does not see them.
+#
+# Each run adds the lines that are missing. It downloads each zip from
+# download.mooncakes.io, checks it against the index checksum, and keeps only
+# the manifest line (the zip stays in memory). Lines are written to disk one
+# by one, so a stopped run loses no work and the next run continues.
+permissions:
+  contents: read
+
+env:
+  # Ref of moonrockz/moonbit-registry-tools that supplies "manifest build"
+  REGISTRY_TOOLS_REF: 614646e38d9925973fa04cff5949b5a0fe806458 # moonbit-registry-tools main after PR #11
+  # Downloads at the same time
+  CONCURRENCY: '8'
+
+jobs:
+  manifests:
+    runs-on: ubuntu-latest
+    # Run after a successful mirror run, or on manual trigger
+    if: |
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event.workflow_run.conclusion == 'success')
+    timeout-minutes: 90
+
+    steps:
+      # MOONCAKES_INDEX_DEPLOY_KEY is the private half of a deploy key with
+      # write access to moonrockz/mooncakes-index.
+      - name: Checkout mooncakes-index
+        uses: actions/checkout@v4
+        with:
+          repository: moonrockz/mooncakes-index
+          ref: main
+          ssh-key: ${{ secrets.MOONCAKES_INDEX_DEPLOY_KEY }}
+          fetch-depth: 0
+          path: index
+
+      - name: Checkout moonbit-registry-tools
+        uses: actions/checkout@v4
+        with:
+          repository: moonrockz/moonbit-registry-tools
+          ref: ${{ env.REGISTRY_TOOLS_REF }}
+          path: tools
+          persist-credentials: false
+
+      - name: Read Bun version
+        id: bun
+        run: |
+          # Use the Bun version that moonbit-registry-tools pins in mise.toml
+          BUN_VERSION=$(sed -nE 's/^bun[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' tools/mise.toml | head -n 1)
+          if [ -z "$BUN_VERSION" ]; then
+            echo "::error::No bun version in tools/mise.toml"
+            exit 1
+          fi
+          echo "Bun $BUN_VERSION"
+          echo "version=$BUN_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ steps.bun.outputs.version }}
+
+      - name: Install moonbit-registry-tools
+        working-directory: tools
+        run: bun install --frozen-lockfile
+
+      - name: Write registry config
+        run: |
+          # A temporary registry whose default source is the index checkout.
+          # "manifest build" reads the index from --index and downloads the
+          # zips from download_url; it does not clone index_url.
+          REGISTRY_DIR="$RUNNER_TEMP/registry"
+          mkdir -p "$REGISTRY_DIR"
+          cat > "$REGISTRY_DIR/registry.toml" << EOF
+          default_source = "mooncakes-index"
+
+          [registry]
+          name = "manifests"
+          data_dir = "$RUNNER_TEMP/registry-data"
+
+          [[sources]]
+          name = "mooncakes-index"
+          type = "mooncakes"
+          url = "https://mooncakes.io"
+          index_url = "file://$GITHUB_WORKSPACE/index"
+          index_type = "git"
+          download_url = "https://download.mooncakes.io"
+          enabled = true
+          EOF
+          cat "$REGISTRY_DIR/registry.toml"
+          echo "REGISTRY_DIR=$REGISTRY_DIR" >> "$GITHUB_ENV"
+
+      - name: Build manifests
+        id: build
+        # Less than the job timeout, so that the lines written so far are
+        # still committed when the limit is too high for one run
+        timeout-minutes: 75
+        env:
+          # About 14 versions/s (19 MB/s) in a local test, so 10000 versions
+          # take about 12 minutes; the step timeout leaves room for a slower
+          # network. The whole index (19519 versions, about 16 GB) takes two runs.
+          LIMIT: ${{ inputs.limit || '10000' }}
+          PACKAGES: ${{ inputs.packages }}
+        run: |
+          set -uo pipefail
+          LOG="$RUNNER_TEMP/manifest-build.log"
+          args=(manifest build
+            --index "$GITHUB_WORKSPACE/index"
+            --dir "$REGISTRY_DIR"
+            --limit "$LIMIT"
+            --concurrency "$CONCURRENCY")
+          if [ -n "$PACKAGES" ]; then
+            read -ra globs <<< "$PACKAGES"
+            args+=(--packages "${globs[@]}")
+          fi
+
+          START=$(date +%s)
+          status=0
+          (cd tools && bun run src/index.ts "${args[@]}") 2>&1 | tee "$LOG" || status=$?
+          ELAPSED=$(( $(date +%s) - START ))
+
+          # Last line: "Manifests: A added, E already present, F failed, R left for a later run"
+          RESULT=$(sed 's/\x1b\[[0-9;]*m//g' "$LOG" | grep -E 'Manifests: [0-9]+ added' | tail -n 1 || true)
+          if [ -z "$RESULT" ]; then
+            echo "::error::manifest build stopped before the end (exit $status)"
+            exit 1
+          fi
+          read -r ADDED EXISTING FAILED REMAINING <<< "$(echo "$RESULT" | grep -oE '[0-9]+' | paste -sd ' ')"
+          {
+            echo "added=$ADDED"
+            echo "existing=$EXISTING"
+            echo "failed=$FAILED"
+            echo "remaining=$REMAINING"
+            echo "elapsed=$ELAPSED"
+          } >> "$GITHUB_OUTPUT"
+
+          # A failed version has no line yet; the next run tries it again
+          sed 's/\x1b\[[0-9;]*m//g' "$LOG" | grep -oE 'No manifest for .*' > "$RUNNER_TEMP/manifest-failures.txt" || true
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::warning::$FAILED versions failed; see the step summary"
+          fi
+
+      - name: Commit and push
+        id: push
+        # Also after a failed, timed-out or cancelled build: the lines on disk
+        # are complete. always() makes the step run after a cancel too.
+        if: ${{ always() && steps.build.conclusion != 'skipped' }}
+        working-directory: index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -- manifests
+          if git diff --cached --quiet; then
+            echo "No new manifest lines"
+            echo "versions=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # One line per version; existing lines do not change
+          VERSIONS=$(git diff --cached --numstat -- manifests | awk '{ n += $1 - $2 } END { print n }')
+          git commit --quiet -m "Add archive manifests: $VERSIONS versions"
+          echo "versions=$VERSIONS" >> "$GITHUB_OUTPUT"
+
+          # The mirror can push between our checkout and now; rebase on it
+          for attempt in 1 2; do
+            if git pull --rebase --quiet origin main && git push origin HEAD:main; then
+              echo "Pushed $VERSIONS manifest lines to mooncakes-index main"
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            echo "Push attempt $attempt failed"
+            sleep 15
+          done
+          echo "::error::Could not push the manifests"
+          exit 1
+
+      - name: Summary
+        if: always()
+        env:
+          ADDED: ${{ steps.build.outputs.added }}
+          EXISTING: ${{ steps.build.outputs.existing }}
+          FAILED: ${{ steps.build.outputs.failed }}
+          REMAINING: ${{ steps.build.outputs.remaining }}
+          ELAPSED: ${{ steps.build.outputs.elapsed }}
+          COMMITTED: ${{ steps.push.outputs.versions }}
+        run: |
+          {
+            echo "## Archive Manifests"
+            echo ""
+            if [ -z "$ADDED" ]; then
+              echo "The build did not finish. Lines written before it stopped: ${COMMITTED:-0} (committed)."
+            else
+              MISSING=$(( FAILED + REMAINING ))
+              RATE=$(awk -v a="$ADDED" -v s="$ELAPSED" 'BEGIN { if (s > 0) printf "%.1f", a / s; else print "-" }')
+              echo "| | Versions |"
+              echo "| --- | ---: |"
+              echo "| Added in this run | $ADDED |"
+              echo "| Already present | $EXISTING |"
+              echo "| Failed | $FAILED |"
+              echo "| Not tried (limit) | $REMAINING |"
+              echo "| **Still missing** | **$MISSING** |"
+              echo ""
+              echo "- **Committed**: ${COMMITTED:-0} lines"
+              echo "- **Time**: ${ELAPSED} s ($RATE versions/s)"
+            fi
+            if [ -s "$RUNNER_TEMP/manifest-failures.txt" ]; then
+              echo ""
+              echo "### Failures"
+              echo ""
+              echo "These versions get no line; the next run tries them again."
+              echo ""
+              echo '```'
+              head -n 100 "$RUNNER_TEMP/manifest-failures.txt"
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

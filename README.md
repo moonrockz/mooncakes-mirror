@@ -45,6 +45,7 @@ Only the index is mirrored. Package archives still come from `download.mooncakes
 3. **GitHub Pages**: After a successful mirror run, the `pages.yml` workflow builds the statistics website at `https://moonrockz.github.io/mooncakes-mirror` from the index data
 4. **E2E Test**: After a successful Pages run, the `e2e.yml` workflow runs `moon update` against the index and builds an example project
 5. **Package Downloads**: Package `.zip` files are not mirrored. `moon` gets them from `https://download.mooncakes.io`
+6. **Archive Manifests**: After a successful mirror run, the `manifests.yml` workflow adds a manifest line for each new version to `manifests/` in the index. The moonbit-registry-tools proxy uses it to check zips that it rebuilds from GitHub. `moon` ignores it. See [CONTRIBUTING.md](CONTRIBUTING.md#archive-manifests)
 
 ## Manual Mirror
 
