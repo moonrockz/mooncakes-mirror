@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import rabbitTEA from "rabbit-tea-vite";
+import rabbita from "@rabbita/vite";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
@@ -9,5 +9,5 @@ export default defineConfig({
     outDir: "dist",
     emptyOutDir: true,
   },
-  plugins: [rabbitTEA(), tailwindcss()],
+  plugins: [rabbita({ mainPkgDir: "src/main" }), tailwindcss()],
 });

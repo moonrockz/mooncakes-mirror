@@ -16,7 +16,6 @@ _build/
 
 # Node.js
 node_modules/
-package-lock.json
 bun.lock
 
 # Vite build output
