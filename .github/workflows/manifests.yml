@@ -40,7 +40,7 @@ permissions:
 
 env:
   # Ref of moonrockz/moonbit-registry-tools that supplies "manifest build"
-  REGISTRY_TOOLS_REF: main
+  REGISTRY_TOOLS_REF: 614646e38d9925973fa04cff5949b5a0fe806458 # moonbit-registry-tools main after PR #11
   # Downloads at the same time
   CONCURRENCY: '8'
 
