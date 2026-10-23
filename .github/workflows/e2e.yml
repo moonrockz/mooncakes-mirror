@@ -43,6 +43,8 @@ jobs:
       - name: Setup MoonBit
         uses: chawyehsu/setup-moonup@8b0340aa45016c02c776cbe42a7856b371e610bf # v1
         with:
+          # Installs the toolchain. The moon shim selects it from the moonbit-version
+          # file in the repo root (without that file it uses latest). Keep both the same.
           moonbit-version: '0.10.15+943464bfa'
 
       - name: Verify mirror website and index
@@ -90,6 +92,8 @@ jobs:
       - name: Add a package from the index
         run: |
           cp -R examples/hello-world "$RUNNER_TEMP/hello-world-dep"
+          # Outside the repo, moonup cannot find the pin file in a parent directory
+          cp moonbit-version "$RUNNER_TEMP/hello-world-dep/"
           cd "$RUNNER_TEMP/hello-world-dep"
           moon add moonbitlang/x@0.5.1
           moon build
@@ -141,6 +145,8 @@ jobs:
       - name: Setup MoonBit
         uses: chawyehsu/setup-moonup@8b0340aa45016c02c776cbe42a7856b371e610bf # v1
         with:
+          # Installs the toolchain. The moon shim selects it from the moonbit-version
+          # file in the repo root (without that file it uses latest). Keep both the same.
           moonbit-version: '0.10.15+943464bfa'
 
       - name: Write moon registry config
