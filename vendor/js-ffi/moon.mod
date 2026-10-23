@@ -1,0 +1,17 @@
+name = "rami3l/js-ffi"
+
+version = "0.4.0"
+
+readme = "README.md"
+
+repository = ""
+
+license = "Apache-2.0"
+
+keywords = [ ]
+
+description = ""
+
+source = "src"
+
+preferred_target = "js"

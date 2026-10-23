@@ -1,0 +1,9 @@
+import {
+  "Yoorkin/rabbit-tea/url",
+  "Yoorkin/rabbit-tea/dom",
+  "Yoorkin/rabbit-tea/cmd",
+}
+
+options(
+  link: { "js": { "format": "iife" } },
+)

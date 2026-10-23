@@ -144,9 +144,9 @@ pub impl @json.FromJson for Value with from_json(json : Json, path) {
     Object(kvs) => {
       let acc = Object::new()
       for k, v in kvs {
-        acc.inner().set_with_string(k, (@json.from_json(v, path~) : Value))
+        acc.0.set_with_string(k, (@json.from_json(v, path~) : Value))
       }
-      acc.inner()
+      acc.0
     }
   }
 }

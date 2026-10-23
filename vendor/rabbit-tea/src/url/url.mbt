@@ -83,7 +83,7 @@ pub fn parse(url : String) -> Url raise Error {
   }
   let (host, port) = match mid.split(":").collect() {
     [host, port] => {
-      let port = try @strconv.parse_int(port.to_string()) catch {
+      let port = try @string.parse_int(port) catch {
         _ => Option::None
       } noraise {
         number => Some(number)

@@ -1,0 +1,11 @@
+import {
+  "Yoorkin/rabbit-tea/internal/browser" @adapter,
+  "Yoorkin/rabbit-tea/dom",
+  "Yoorkin/rabbit-tea/url",
+  "Yoorkin/rabbit-tea/variant",
+  "rami3l/js-ffi/js",
+}
+
+options(
+  link: { "js": { "format": "iife" } },
+)

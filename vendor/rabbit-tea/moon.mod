@@ -1,0 +1,21 @@
+name = "Yoorkin/rabbit-tea"
+
+version = "0.10.11"
+
+import {
+  "rami3l/js-ffi@0.4.0",
+}
+
+readme = "README.md"
+
+repository = "https://github.com/Yoorkin/rabbit-tea"
+
+license = "Apache-2.0"
+
+keywords = [ "TEA", "html", "UI", "web" ]
+
+description = "TEA web UI framework for MoonBit"
+
+source = "src"
+
+preferred_target = "js"
