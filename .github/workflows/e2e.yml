@@ -92,6 +92,8 @@ jobs:
       - name: Add a package from the index
         run: |
           cp -R examples/hello-world "$RUNNER_TEMP/hello-world-dep"
+          # Outside the repo, moonup cannot find the pin file in a parent directory
+          cp moonbit-version "$RUNNER_TEMP/hello-world-dep/"
           cd "$RUNNER_TEMP/hello-world-dep"
           moon add moonbitlang/x@0.5.1
           moon build
