@@ -115,16 +115,34 @@ fn quickstart_section() -> @html.Html[Msg] {
       text("Quick Start"),
     ]),
     p(class="text-slate-600 mb-4", [
-      text("Set the "),
-      code(class="bg-slate-100 px-2 py-0.5 rounded text-sm font-mono text-indigo-600", [text("MOONCAKES_REGISTRY")]),
-      text(" environment variable to use this mirror:"),
+      text("To use this mirror, write this to "),
+      code(class="bg-slate-100 px-2 py-0.5 rounded text-sm font-mono text-indigo-600", [text("$MOON_HOME/config.json")]),
+      text(" (default "),
+      code(class="bg-slate-100 px-2 py-0.5 rounded text-sm font-mono text-indigo-600", [text("~/.moon/config.json")]),
+      text("):"),
     ]),
     pre(class="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto mb-4 text-sm", [
-      code([text("export MOONCAKES_REGISTRY=https://moonrockz.github.io/mooncakes-mirror")]),
+      code([
+        text(
+          "{\n  \"api\": \"https://mooncakes.io\",\n  \"index\": \"https://github.com/moonrockz/mooncakes-index.git\",\n  \"download\": \"https://download.mooncakes.io\"\n}",
+        ),
+      ]),
     ]),
-    p(class="text-slate-600 mb-4", [text("Then use the Moon CLI as usual:")]),
-    pre(class="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm", [
-      code([text("moon new my-project\ncd my-project\nmoon add moonbitlang/core\nmoon build")]),
+    p(class="text-slate-600 mb-4", [
+      text("Make sure that "),
+      code(class="bg-slate-100 px-2 py-0.5 rounded text-sm font-mono text-indigo-600", [text("MOONCAKES_REGISTRY")]),
+      text(" is not set. Then use the Moon CLI as usual:"),
+    ]),
+    pre(class="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto mb-4 text-sm", [
+      code([text("moon update\nmoon new my-project\ncd my-project\nmoon add moonbitlang/core\nmoon build")]),
+    ]),
+    div(class="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800 flex items-start gap-3", [
+      icon_styled("fa-solid fa-triangle-exclamation", "text-amber-500 text-lg"),
+      p([
+        text("Do not set "),
+        code(class="font-mono", [text("MOONCAKES_REGISTRY")]),
+        text(" to this website. From 2026-08, moon shallow-clones the index from a branch named main. GitHub Pages serves only the Git dumb HTTP protocol, which cannot do shallow clones, so moon update fails. Package archives are not mirrored; moon downloads them from download.mooncakes.io."),
+      ]),
     ]),
   ])
 }
@@ -187,7 +205,7 @@ fn features_section() -> @html.Html[Msg] {
     div(class="grid grid-cols-1 md:grid-cols-2 gap-4", [
       feature_card("fa-solid fa-rotate", "Daily Sync", "Automatically synchronized with mooncakes.io every day at 2 AM UTC."),
       feature_card("fa-solid fa-database", "Full Index", "Complete package index with all metadata, versions, and checksums."),
-      feature_card("fa-brands fa-git-alt", "Git Protocol", "Compatible Git dumb HTTP protocol for seamless integration."),
+      feature_card("fa-brands fa-git-alt", "Smart HTTP Index", "The index is served over Git smart HTTP from github.com/moonrockz/mooncakes-index, so current moon can shallow-clone it."),
       feature_card("fa-solid fa-code-branch", "Open Source", "Fully open source and community-driven mirror solution."),
     ]),
   ])
@@ -204,7 +222,7 @@ fn selfhost_callout_section() -> @html.Html[Msg] {
           text("Host Your Own Mirror"),
         ]),
         p(class="text-slate-600", [
-          text("Need a private mirror for your organization or want to run your own registry infrastructure? Our self-hosting guide walks you through setting up a complete mooncakes mirror using GitHub Pages or your own server."),
+          text("Need a private mirror for your organization or want to run your own registry infrastructure? Our self-hosting guide walks you through setting up a mooncakes mirror on your own server with moonbit-registry-tools."),
         ]),
       ]),
       a(href="#/selfhost", class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors font-medium text-sm whitespace-nowrap", [

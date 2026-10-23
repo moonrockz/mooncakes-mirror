@@ -1,18 +1,21 @@
 # MoonCakes Mirror - Registry Index
 
-**Note:** The actual registry index data is stored on the `registry-index` branch, not on `main`.
+**Note:** The registry index data is not stored in this repository. It is the `main` branch of
+[moonrockz/mooncakes-index](https://github.com/moonrockz/mooncakes-index).
+
+The old `registry-index` branch of this repository is no longer updated.
 
 ## Architecture
 
-- **`main` branch**: Contains source code (MoonBit site, workflows)
-- **`registry-index` branch**: A clone of mooncakes.io index with upstream tracking
+- **`main` branch of this repository**: Contains source code (MoonBit site, workflows)
+- **`main` branch of `moonrockz/mooncakes-index`**: A clone of the mooncakes.io index with upstream tracking
 
 ## How It Works
 
-1. The `registry-index` branch is a direct clone of mooncakes.io index
-2. The `mirror.yml` workflow pulls from upstream (mooncakes.io) and pushes to `registry-index`
-3. The `pages.yml` workflow combines the built site from `main` with the index from `registry-index`
-4. GitHub Pages serves the combined result
+1. The `mirror.yml` workflow checks out `moonrockz/mooncakes-index`, merges the upstream index from mooncakes.io, writes `stats.json` and `yanked.json`, and pushes to `main`
+2. Current `moon` shallow-clones `https://github.com/moonrockz/mooncakes-index.git` (GitHub serves it over Git smart HTTP)
+3. The `pages.yml` workflow builds the website from `main` of this repository and takes `stats.json` and `yanked.json` from `mooncakes-index`
+4. GitHub Pages serves the website. Its `/git/index` copy uses the dumb HTTP protocol and works only with `moon` releases from before 2026-08
 
 This approach keeps a full history of the index and reduces reliance on upstream during deployment.
 

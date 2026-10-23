@@ -8,11 +8,12 @@ This repository is an automated mirror of the mooncakes.io registry. Most operat
 
 ## How the Mirror Works
 
-1. **GitHub Actions**: The `.github/workflows/mirror.yml` workflow runs daily (or on manual trigger) to sync packages from mooncakes.io
-2. **Registry Tools**: Uses [moonbit-registry-tools](https://github.com/moonrockz/moonbit-registry-tools) to perform the mirroring
-3. **Index Storage**: The package index is stored in `data/index/` and committed to the repository
-4. **GitHub Pages**: The `.github/workflows/pages.yml` workflow deploys the index to GitHub Pages
-5. **Package Storage**: Package `.zip` files are NOT stored in this repository; they are proxied from mooncakes.io
+1. **GitHub Actions**: The `.github/workflows/mirror.yml` workflow runs daily at 2 AM UTC (or on manual trigger). It merges the upstream index from `https://mooncakes.io/git/index` and writes `stats.json` and `yanked.json`
+2. **Index Storage**: The workflow pushes the index to the `main` branch of [moonrockz/mooncakes-index](https://github.com/moonrockz/mooncakes-index). It uses an SSH deploy key with write access to that repository. The private key is the repository secret `MOONCAKES_INDEX_DEPLOY_KEY` in this repository
+3. **Index Serving**: GitHub serves `mooncakes-index` over Git smart HTTP. Current `moon` needs this, because it shallow-clones the `main` branch
+4. **GitHub Pages**: The `.github/workflows/pages.yml` workflow builds the statistics website from `main` of this repository and the data in `mooncakes-index`. The `/git/index` copy on the website uses the dumb HTTP protocol and works only with `moon` releases from before 2026-08
+5. **E2E Test**: The `.github/workflows/e2e.yml` workflow writes `$MOON_HOME/config.json` with the index URL, runs `moon update`, and builds `examples/hello-world`
+6. **Package Storage**: Package `.zip` files are NOT mirrored; `moon` downloads them from `https://download.mooncakes.io`
 
 ## Manual Operations
 
@@ -22,14 +23,25 @@ To manually trigger a mirror operation:
 
 1. Go to [Actions → Mirror Mooncakes Registry](https://github.com/moonrockz/mooncakes-mirror/actions/workflows/mirror.yml)
 2. Click "Run workflow"
-3. Choose your options:
-   - **Pattern**: Specify a package pattern (e.g., `moonbitlang/*` for all moonbitlang packages)
-   - **Full mirror**: Check this to mirror ALL packages (may take a long time)
-4. Click "Run workflow"
+3. Click "Run workflow"
 
-### Local Testing
+### Use the Mirror Index Locally
 
-To test the mirror setup locally:
+Write this to `$MOON_HOME/config.json` (default `~/.moon/config.json`), and make sure that `MOONCAKES_REGISTRY` is not set:
+
+```json
+{
+  "api": "https://mooncakes.io",
+  "index": "https://github.com/moonrockz/mooncakes-index.git",
+  "download": "https://download.mooncakes.io"
+}
+```
+
+Then run `moon update` and build a project. Do not set `MOONCAKES_REGISTRY` to the GitHub Pages URL: from 2026-08, `moon` shallow-clones the index, and GitHub Pages serves only the dumb HTTP protocol, which cannot do shallow clones.
+
+### Local Testing with moonbit-registry-tools
+
+To test a self-hosted registry locally (moonbit-registry-tools v0.3.0 or later serves the index over Git smart HTTP by default):
 
 ```bash
 # Clone the repository
@@ -56,8 +68,15 @@ moonbit-registry mirror "moonbitlang/*"
 # Start the local server for testing
 moonbit-registry serve --port 8080
 
-# In another terminal, test with moon CLI
-export MOONCAKES_REGISTRY=http://localhost:8080
+# In another terminal, point moon at the local server
+cat > ~/.moon/config.json <<'EOF'
+{
+  "api": "http://localhost:8080",
+  "index": "http://localhost:8080/git/index",
+  "download": "http://localhost:8080"
+}
+EOF
+moon update
 moon new test-project
 cd test-project
 moon add moonbitlang/core
@@ -117,6 +136,7 @@ By default, the workflow mirrors all packages. To mirror only specific patterns:
 
 1. Check the [Actions tab](https://github.com/moonrockz/mooncakes-mirror/actions) for error logs
 2. Common issues:
+   - Push rejected or permission denied: Check that the `MOONCAKES_INDEX_DEPLOY_KEY` secret exists and that its public key is a deploy key with write access on `moonrockz/mooncakes-index`
    - Network timeouts: Retry the workflow
    - Disk space: GitHub Actions has storage limits
    - Git conflicts: May need to manually resolve
@@ -133,7 +153,7 @@ If a package exists on mooncakes.io but not in the mirror:
 
 1. Manually trigger a mirror for that package pattern
 2. Wait for the workflow to complete
-3. Check if the package was added to `data/index/`
+3. Check if the package was added to `user/` in [moonrockz/mooncakes-index](https://github.com/moonrockz/mooncakes-index)
 
 ## Maintenance Tasks
 

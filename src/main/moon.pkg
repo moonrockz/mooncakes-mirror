@@ -1,0 +1,15 @@
+import {
+  "Yoorkin/rabbit-tea" @tea,
+  "Yoorkin/rabbit-tea/html",
+  "Yoorkin/rabbit-tea/url",
+  "Yoorkin/rabbit-tea/nav",
+  "moonrockz/mooncakes-mirror/shared",
+  "moonrockz/mooncakes-mirror/pages/home",
+  "moonrockz/mooncakes-mirror/pages/packages",
+  "moonrockz/mooncakes-mirror/pages/publishers",
+  "moonrockz/mooncakes-mirror/pages/selfhost",
+}
+
+options(
+  "is-main": true,
+)

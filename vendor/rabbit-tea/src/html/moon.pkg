@@ -1,0 +1,9 @@
+import {
+  "Yoorkin/rabbit-tea/internal/vdom",
+  "Yoorkin/rabbit-tea/dom",
+  "Yoorkin/rabbit-tea/variant",
+}
+
+options(
+  link: { "js": { "format": "iife" } },
+)

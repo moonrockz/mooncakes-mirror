@@ -4,7 +4,7 @@ on:
   # Run after mirror workflow completes
   workflow_run:
     workflows: ["Mirror Mooncakes Registry"]
-    branches: [main, registry-index]
+    branches: [main]
     types:
       - completed
 
@@ -40,27 +40,44 @@ jobs:
           ref: main
           path: main
 
-      - name: Checkout registry-index branch (index data)
+      # The index data lives in the public moonrockz/mooncakes-index repo
+      # (branch main). The mirror workflow writes it; no secret is needed to
+      # read it.
+      - name: Checkout mooncakes-index (index data)
         uses: actions/checkout@v4
         with:
-          ref: registry-index
-          path: registry-index
+          repository: moonrockz/mooncakes-index
+          ref: main
+          path: mooncakes-index
           fetch-depth: 0
 
+      # Pin the toolchain. An unpinned "latest" toolchain broke this build
+      # on 2026-02-11. Update this version on purpose and test the build.
       - name: Setup MoonBit
-        uses: chawyehsu/setup-moonup@v1
+        uses: chawyehsu/setup-moonup@8b0340aa45016c02c776cbe42a7856b371e610bf # v1
+        with:
+          moonbit-version: '0.10.15+943464bfa'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: main/package-lock.json
 
+      # MoonBit dependencies are vendored (see vendor/README.md), so the
+      # build does not use the registry. npm ci installs from the lock file.
       - name: Install dependencies
         working-directory: main
         run: |
-          moon update
-          moon add Yoorkin/rabbit-tea
-          npm install
+          moon version --all
+          npm ci
+
+      # Build MoonBit first so that compiler errors fail this step. The
+      # Vite plugin only logs them and then fails on a missing /main.js.
+      - name: Check MoonBit sources
+        working-directory: main
+        run: moon build --target js --release
 
       - name: Build MoonBit site
         working-directory: main
@@ -79,22 +96,25 @@ jobs:
             echo "Copied Vite build output"
           fi
 
-          # The registry-index branch IS the git index - copy it as a bare repo
-          # First create a bare clone from the checked out repo
-          git clone --bare registry-index _site/git/index
+          # Copy of the index for old moon clients only (before 2026-08),
+          # served with the dumb HTTP protocol. Current moon CANNOT use it:
+          # it clones with --depth 1, and dumb HTTP does not support shallow
+          # fetches. Current clients use
+          # https://github.com/moonrockz/mooncakes-index.git directly.
+          git clone --bare mooncakes-index _site/git/index
           cd _site/git/index
           git update-server-info
           cd ../../..
-          echo "Git index prepared for dumb HTTP protocol"
+          echo "Legacy git index prepared for dumb HTTP protocol"
 
-          # Copy stats.json and yanked.json from registry-index
-          if [ -f "registry-index/stats.json" ]; then
-            cp registry-index/stats.json _site/
+          # Copy stats.json and yanked.json from mooncakes-index
+          if [ -f "mooncakes-index/stats.json" ]; then
+            cp mooncakes-index/stats.json _site/
             echo "Copied stats.json"
           fi
 
-          if [ -f "registry-index/yanked.json" ]; then
-            cp registry-index/yanked.json _site/
+          if [ -f "mooncakes-index/yanked.json" ]; then
+            cp mooncakes-index/yanked.json _site/
             echo "Copied yanked.json"
           fi
 
@@ -121,7 +141,9 @@ jobs:
 
       - name: Summary
         run: |
-          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **URL**: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Index branch**: \`registry-index\`" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Deployment Summary"
+            echo ""
+            echo "- **URL**: ${{ steps.deployment.outputs.page_url }}"
+            echo "- **Index**: \`moonrockz/mooncakes-index\` (branch \`main\`)"
+          } >> "$GITHUB_STEP_SUMMARY"
