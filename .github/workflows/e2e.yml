@@ -4,16 +4,29 @@ on:
   # Manual trigger
   workflow_dispatch:
     inputs:
-      registry_url:
-        description: 'Registry URL to test'
+      site_url:
+        description: 'Mirror website URL to test (stats.json)'
         required: false
         default: 'https://moonrockz.github.io/mooncakes-mirror'
+      index_url:
+        description: 'Git index URL to test (must support smart HTTP)'
+        required: false
+        default: 'https://github.com/moonrockz/mooncakes-index.git'
 
   # Run after pages deployment
   workflow_run:
     workflows: ["Deploy Registry to GitHub Pages"]
     types:
       - completed
+
+# Current moon reads the registry endpoints from $MOON_HOME/config.json.
+# Do not use MOONCAKES_REGISTRY: with moon from 2026-08 on, it makes moon
+# shallow-clone <url>/git/index, and GitHub Pages cannot serve that.
+env:
+  SITE_URL: ${{ github.event.inputs.site_url || 'https://moonrockz.github.io/mooncakes-mirror' }}
+  INDEX_URL: ${{ github.event.inputs.index_url || 'https://github.com/moonrockz/mooncakes-index.git' }}
+  API_URL: https://mooncakes.io
+  DOWNLOAD_URL: https://download.mooncakes.io
 
 jobs:
   test:
@@ -22,9 +35,6 @@ jobs:
     if: |
       (github.event.workflow_run.conclusion == 'success') ||
       (github.event_name == 'workflow_dispatch')
-
-    env:
-      MOONCAKES_REGISTRY: ${{ github.event.inputs.registry_url || 'https://moonrockz.github.io/mooncakes-mirror' }}
 
     steps:
       - name: Checkout
@@ -35,22 +45,29 @@ jobs:
         with:
           moonbit-version: '0.10.15+943464bfa'
 
-      - name: Verify registry is accessible
+      - name: Verify mirror website and index
         run: |
-          echo "Testing registry: $MOONCAKES_REGISTRY"
+          echo "=== Testing stats.json at $SITE_URL ==="
+          curl -sf "$SITE_URL/stats.json" | jq .
 
-          # Test stats endpoint
-          echo "=== Testing stats.json ==="
-          curl -sf "$MOONCAKES_REGISTRY/stats.json" | jq .
+          echo "=== Testing shallow clone of $INDEX_URL (branch main) ==="
+          git clone --depth 1 --single-branch --branch main --no-tags "$INDEX_URL" "$RUNNER_TEMP/index-check"
+          git -C "$RUNNER_TEMP/index-check" log -1 --format='%H %cI %s'
+          test -d "$RUNNER_TEMP/index-check/user"
 
-          # Test git index
-          echo "=== Testing git index ==="
-          curl -sf "$MOONCAKES_REGISTRY/git/index/info/refs" | head -5
+      - name: Write moon registry config
+        run: |
+          MOON_HOME="${MOON_HOME:-$HOME/.moon}"
+          mkdir -p "$MOON_HOME"
+          jq -n --arg api "$API_URL" --arg index "$INDEX_URL" --arg download "$DOWNLOAD_URL" \
+            '{api: $api, index: $index, download: $download}' > "$MOON_HOME/config.json"
+          echo "Wrote $MOON_HOME/config.json:"
+          cat "$MOON_HOME/config.json"
 
       - name: Update moon index from mirror
         working-directory: examples/hello-world
         run: |
-          echo "Updating moon index from: $MOONCAKES_REGISTRY"
+          echo "Updating moon index from: $INDEX_URL"
           moon update
           echo "Moon update completed successfully"
 
@@ -68,6 +85,16 @@ jobs:
           moon run src
           echo "Run completed successfully"
 
+      # Resolve a real package through the mirrored index. The archive comes
+      # from DOWNLOAD_URL and must match the checksum in the index.
+      - name: Add a package from the index
+        run: |
+          cp -R examples/hello-world "$RUNNER_TEMP/hello-world-dep"
+          cd "$RUNNER_TEMP/hello-world-dep"
+          moon add moonbitlang/x@0.5.1
+          moon build
+          test -d .mooncakes/moonbitlang/x
+
       - name: Run tests (if any)
         working-directory: examples/hello-world
         continue-on-error: true
@@ -77,16 +104,20 @@ jobs:
 
       - name: Test Summary
         run: |
-          echo "## E2E Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Registry URL**: \`$MOONCAKES_REGISTRY\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status**: All tests passed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Verified" >> $GITHUB_STEP_SUMMARY
-          echo "- Registry stats endpoint accessible" >> $GITHUB_STEP_SUMMARY
-          echo "- Git index available via dumb HTTP protocol" >> $GITHUB_STEP_SUMMARY
-          echo "- Dependencies fetched successfully" >> $GITHUB_STEP_SUMMARY
-          echo "- Example project builds and runs" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## E2E Test Results"
+            echo ""
+            echo "- **Website**: \`$SITE_URL\`"
+            echo "- **Index**: \`$INDEX_URL\`"
+            echo "- **Status**: All tests passed"
+            echo ""
+            echo "### Verified"
+            echo "- Website stats.json accessible"
+            echo "- Index can be shallow-cloned (branch main, smart HTTP)"
+            echo "- moon update works with \$MOON_HOME/config.json"
+            echo "- A package resolves through the index and downloads"
+            echo "- Example project builds and runs"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   test-matrix:
     runs-on: ${{ matrix.os }}
@@ -99,8 +130,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
 
-    env:
-      MOONCAKES_REGISTRY: ${{ github.event.inputs.registry_url || 'https://moonrockz.github.io/mooncakes-mirror' }}
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout
@@ -110,6 +142,14 @@ jobs:
         uses: chawyehsu/setup-moonup@8b0340aa45016c02c776cbe42a7856b371e610bf # v1
         with:
           moonbit-version: '0.10.15+943464bfa'
+
+      - name: Write moon registry config
+        run: |
+          MOON_HOME="${MOON_HOME:-$HOME/.moon}"
+          mkdir -p "$MOON_HOME"
+          printf '{"api":"%s","index":"%s","download":"%s"}\n' \
+            "$API_URL" "$INDEX_URL" "$DOWNLOAD_URL" > "$MOON_HOME/config.json"
+          cat "$MOON_HOME/config.json"
 
       - name: Build example project
         working-directory: examples/hello-world
