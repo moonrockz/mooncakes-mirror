@@ -4,7 +4,7 @@ A mirror of the [mooncakes.io](https://mooncakes.io) package registry for MoonBi
 
 ## What is this?
 
-This repository serves as a mirror of the official MoonBit package registry (mooncakes.io). It uses [moonbit-registry-tools](https://github.com/moonrockz/moonbit-registry-tools) to automatically synchronize packages and provide an alternative registry source.
+This repository serves as a mirror of the official MoonBit package registry (mooncakes.io). GitHub Actions workflows synchronize the index with Git every day. The workflows do not use [moonbit-registry-tools](https://github.com/moonrockz/moonbit-registry-tools).
 
 ## Usage
 
@@ -40,10 +40,11 @@ Only the index is mirrored. Package archives still come from `download.mooncakes
 
 ## How it works
 
-1. **Daily Mirroring**: The `mirror.yml` workflow runs every day at 2 AM UTC (or manually). It merges the upstream index from `https://mooncakes.io/git/index`, writes `stats.json` and `yanked.json`, and pushes to the `main` branch of [moonrockz/mooncakes-index](https://github.com/moonrockz/mooncakes-index) with a deploy key (repository secret `MOONCAKES_INDEX_DEPLOY_KEY`)
+1. **Daily Mirroring**: The `mirror.yml` workflow runs every day at 02:00 UTC (or manually). It merges the upstream index from `https://mooncakes.io/git/index`, writes `stats.json` and `yanked.json`, and pushes to the `main` branch of [moonrockz/mooncakes-index](https://github.com/moonrockz/mooncakes-index) with a deploy key (repository secret `MOONCAKES_INDEX_DEPLOY_KEY`)
 2. **Index Serving**: GitHub serves the index repository over smart HTTP, so `moon` can shallow-clone it
-3. **GitHub Pages**: The `pages.yml` workflow builds the statistics website at `https://moonrockz.github.io/mooncakes-mirror` from the index data
-4. **Package Downloads**: Package `.zip` files are not mirrored. `moon` gets them from `https://download.mooncakes.io`
+3. **GitHub Pages**: After a successful mirror run, the `pages.yml` workflow builds the statistics website at `https://moonrockz.github.io/mooncakes-mirror` from the index data
+4. **E2E Test**: After a successful Pages run, the `e2e.yml` workflow runs `moon update` against the index and builds an example project
+5. **Package Downloads**: Package `.zip` files are not mirrored. `moon` gets them from `https://download.mooncakes.io`
 
 ## Manual Mirror
 
@@ -52,13 +53,19 @@ You can also start a mirror operation manually:
 1. Go to the [Actions tab](https://github.com/moonrockz/mooncakes-mirror/actions/workflows/mirror.yml)
 2. Click "Run workflow"
 
-## Configuration
+## Development
 
-The registry is configured via `registry.toml`. Key settings:
+The website is a MoonBit app that Vite builds with `@rabbita/vite`. The `moonbit-version` file pins the MoonBit toolchain, and `vendor/` has patched copies of two MoonBit dependencies. To build the site locally:
 
-- **Source**: Mirrors from `https://mooncakes.io`
-- **Data directory**: `./data/`
-- **Base URL**: `https://moonrockz.github.io/mooncakes-mirror`
+```bash
+npm ci
+moon build --target js --release
+npm run build
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the toolchain update procedure, the vendored dependencies and the deploy key.
+
+The `registry.toml` file is a moonbit-registry-tools configuration for local tests. The workflows do not read it.
 
 ## Self-hosting
 
@@ -75,7 +82,7 @@ To host your own registry or mirror, use [moonbit-registry-tools](https://github
 
 ## Related Projects
 
-- [moonbit-registry-tools](https://github.com/moonrockz/moonbit-registry-tools) - The tool used to create and maintain this mirror
+- [moonbit-registry-tools](https://github.com/moonrockz/moonbit-registry-tools) - Tools to host your own MoonBit registry or mirror
 - [MoonBit](https://www.moonbitlang.com/) - The MoonBit programming language
 - [mooncakes.io](https://mooncakes.io) - The official MoonBit package registry
 
