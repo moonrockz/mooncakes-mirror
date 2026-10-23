@@ -172,8 +172,9 @@ jobs:
 
       - name: Commit and push
         id: push
-        # Also after a failed or stopped build: the lines on disk are complete
-        if: ${{ !cancelled() && steps.build.conclusion != 'skipped' }}
+        # Also after a failed, timed-out or cancelled build: the lines on disk
+        # are complete. always() makes the step run after a cancel too.
+        if: ${{ always() && steps.build.conclusion != 'skipped' }}
         working-directory: index
         run: |
           git config user.name "github-actions[bot]"
