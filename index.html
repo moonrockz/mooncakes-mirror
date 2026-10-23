@@ -122,9 +122,15 @@
   </div>
 
   <h2>Usage</h2>
-  <p>To use this mirror registry with your MoonBit projects, set the <code>MOONCAKES_REGISTRY</code> environment variable:</p>
+  <p>To use this mirror with your MoonBit projects, write this to <code>$MOON_HOME/config.json</code> (default <code>~/.moon/config.json</code>):</p>
 
-  <pre><code>export MOONCAKES_REGISTRY=https://moonrockz.github.io/mooncakes-mirror</code></pre>
+  <pre><code>{
+  "api": "https://mooncakes.io",
+  "index": "https://github.com/moonrockz/mooncakes-index.git",
+  "download": "https://download.mooncakes.io"
+}</code></pre>
+
+  <p>Do not set <code>MOONCAKES_REGISTRY</code> to this website. From 2026-08, <code>moon</code> shallow-clones the index, and GitHub Pages cannot serve shallow clones.</p>
 
   <p>Then use the Moon CLI as usual:</p>
 
@@ -140,8 +146,9 @@ moon build</code></pre>
 
   <h2>Endpoints</h2>
   <ul>
-    <li><code>/git/index</code> - Git index repository</li>
-    <li><code>/user/{username}/{package}/{version}.zip</code> - Package downloads (proxied to mooncakes.io)</li>
+    <li><code>https://github.com/moonrockz/mooncakes-index.git</code> - Git index repository (smart HTTP, branch <code>main</code>)</li>
+    <li><code>/git/index</code> - Legacy dumb HTTP copy of the index, only for <code>moon</code> releases from before 2026-08</li>
+    <li><code>https://download.mooncakes.io</code> - Package downloads (not mirrored)</li>
   </ul>
 
   <h2>Links</h2>
