@@ -47,20 +47,33 @@ jobs:
           path: registry-index
           fetch-depth: 0
 
+      # Pin the toolchain. An unpinned "latest" toolchain broke this build
+      # on 2026-02-11. Update this version on purpose and test the build.
       - name: Setup MoonBit
-        uses: chawyehsu/setup-moonup@v1
+        uses: chawyehsu/setup-moonup@8b0340aa45016c02c776cbe42a7856b371e610bf # v1
+        with:
+          moonbit-version: '0.10.15+943464bfa'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: main/package-lock.json
 
+      # MoonBit dependencies are vendored (see vendor/README.md), so the
+      # build does not use the registry. npm ci installs from the lock file.
       - name: Install dependencies
         working-directory: main
         run: |
-          moon update
-          moon add Yoorkin/rabbit-tea
-          npm install
+          moon version --all
+          npm ci
+
+      # Build MoonBit first so that compiler errors fail this step. The
+      # Vite plugin only logs them and then fails on a missing /main.js.
+      - name: Check MoonBit sources
+        working-directory: main
+        run: moon build --target js --release
 
       - name: Build MoonBit site
         working-directory: main
