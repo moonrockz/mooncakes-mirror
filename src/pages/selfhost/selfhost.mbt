@@ -92,7 +92,7 @@ fn overview_section() -> @html.Html[Msg] {
       li([text("Host private packages alongside public ones")]),
       li([text("Have full control over your dependency infrastructure")]),
     ]),
-    info_callout("This mirror uses the moonbit-registry-tools CLI to sync packages from mooncakes.io and serve them via GitHub Pages or any static file host."),
+    info_callout("Current moon (from 2026-08) clones the registry index with git clone --depth 1 from a branch named main. A shallow clone needs the Git smart HTTP protocol. Static hosts such as GitHub Pages serve only the dumb HTTP protocol, so they cannot host an index that current moon can use."),
   ])
 }
 
@@ -106,90 +106,93 @@ fn prerequisites_section() -> @html.Html[Msg] {
         a(href="https://www.moonbitlang.com/download/", class="text-indigo-600 hover:underline", [text("download")]),
         text(")"),
       ]),
-      li([text("Git installed and configured")]),
-      li([text("GitHub account (for GitHub Pages hosting) or another static file host")]),
+      li([text("Git installed and configured (it includes git-http-backend, which the registry server uses for smart HTTP)")]),
+      li([text("A server that can run moonbit-registry serve, or a GitHub account to host the index as a repository")]),
       li([text("Basic familiarity with command-line tools")]),
     ]),
   ])
 }
 
 ///|
-/// Quick start section
-fn quickstart_section() -> @html.Html[Msg] {
-  section("fa-solid fa-rocket", "Quick Start", [
+/// Client configuration section
+fn client_config_section() -> @html.Html[Msg] {
+  section("fa-solid fa-laptop-code", "Point moon at Your Mirror", [
+    p(class="text-slate-600 mb-2", [
+      text("Clients write $MOON_HOME/config.json (default ~/.moon/config.json). For this mirror, the file is:"),
+    ]),
+    code_block(
+      "{\n  \"api\": \"https://mooncakes.io\",\n  \"index\": \"https://github.com/moonrockz/mooncakes-index.git\",\n  \"download\": \"https://download.mooncakes.io\"\n}",
+    ),
+    p(class="text-slate-600 mb-2", [
+      text("For your own mirror, set index (and, if you serve package archives, api and download) to your server. Then run moon update."),
+    ]),
+    warning_callout("Do not set MOONCAKES_REGISTRY to a GitHub Pages URL. With moon from 2026-08 on, it makes moon shallow-clone <url>/git/index, and GitHub Pages cannot serve that."),
+  ])
+}
+
+///|
+/// Registry tools section
+fn registry_tools_setup_section() -> @html.Html[Msg] {
+  section("fa-solid fa-terminal", "Option 1: Serve a Registry with moonbit-registry-tools", [
     p(class="text-slate-600 mb-4", [
-      text("The fastest way to get started is to fork our template repository and enable GitHub Actions:"),
+      text("This is the recommended way. From v0.3.0, moonbit-registry serve serves the index over Git smart HTTP by default, so current moon can shallow-clone it. It also serves the package archives that you mirror."),
     ]),
-    subsection("1. Fork the Template", [
+    subsection("Install Registry Tools", [
+      code_block("mise use -g \"github:moonrockz/moonbit-registry-tools@latest\""),
       p(class="text-slate-600 mb-2", [
-        text("Fork the "),
-        a(href="https://github.com/moonrockz/mooncakes-mirror", class="text-indigo-600 hover:underline", [text("mooncakes-mirror")]),
-        text(" repository to your GitHub account."),
-      ]),
-    ]),
-    subsection("2. Enable GitHub Pages", [
-      ol(class="list-decimal list-inside text-slate-600 space-y-2 mb-4", [
-        li([text("Go to your forked repository's Settings")]),
-        li([text("Navigate to Pages in the sidebar")]),
-        li([text("Under \"Build and deployment\", select \"GitHub Actions\" as the source")]),
+        text("Or download a binary from the "),
+        a(href="https://github.com/moonrockz/moonbit-registry-tools/releases", class="text-indigo-600 hover:underline", [text("releases page")]),
+        text("."),
       ]),
     ]),
-    subsection("3. Enable GitHub Actions", [
-      p(class="text-slate-600 mb-2", [
-        text("The repository includes a workflow that automatically syncs packages daily. Enable it in the Actions tab of your repository."),
-      ]),
+    subsection("Initialize the Registry", [
+      code_block("moonbit-registry init ./my-registry --name my-registry\ncd my-registry"),
     ]),
-    subsection("4. Configure Your Mirror URL", [
+    subsection("Mirror Packages", [
+      code_block("# Mirror some packages (and their dependencies)\nmoonbit-registry mirror \"moonbitlang/*\"\n\n# Or mirror the entire registry\nmoonbit-registry mirror --full"),
+    ]),
+    subsection("Start the Server", [
+      code_block("moonbit-registry serve --host 0.0.0.0 --port 8080"),
       p(class="text-slate-600 mb-2", [
-        text("Once deployed, your mirror will be available at:"),
+        text("Clients then use this config.json:"),
       ]),
-      code_block("https://YOUR-USERNAME.github.io/mooncakes-mirror"),
-      p(class="text-slate-600 mb-2", [
-        text("Users can point to your mirror by setting the environment variable:"),
-      ]),
-      code_block("export MOONCAKES_REGISTRY=https://YOUR-USERNAME.github.io/mooncakes-mirror"),
+      code_block(
+        "{\n  \"api\": \"http://YOUR-SERVER:8080\",\n  \"index\": \"http://YOUR-SERVER:8080/git/index\",\n  \"download\": \"http://YOUR-SERVER:8080\"\n}",
+      ),
     ]),
   ])
 }
 
 ///|
-/// Manual setup section
-fn manual_setup_section() -> @html.Html[Msg] {
-  section("fa-solid fa-terminal", "Manual Setup with Registry Tools", [
+/// GitHub-hosted index section
+fn github_index_section() -> @html.Html[Msg] {
+  section("fa-brands fa-github", "Option 2: Host the Index on GitHub", [
     p(class="text-slate-600 mb-4", [
-      text("For more control, you can set up a mirror manually using the moonbit-registry-tools CLI."),
+      text("This is how this mirror works. GitHub serves a repository over smart HTTP, so the index can live in a repository whose default branch main is the index. Package archives still come from download.mooncakes.io."),
     ]),
-    subsection("Install Registry Tools", [
-      code_block("moon add moonrockz/moonbit-registry-tools"),
+    subsection("1. Create the Index Repository", [
       p(class="text-slate-600 mb-2", [
-        text("Or clone and build from source:"),
+        text("Create a repository (for example YOUR-ORG/mooncakes-index) and push the upstream index to its main branch:"),
       ]),
-      code_block("git clone https://github.com/moonrockz/moonbit-registry-tools\ncd moonbit-registry-tools\nmoon build"),
+      code_block("git clone https://mooncakes.io/git/index mooncakes-index\ncd mooncakes-index\ngit remote set-url origin git@github.com:YOUR-ORG/mooncakes-index.git\ngit push -u origin main"),
     ]),
-    subsection("Initialize Mirror Directory", [
+    subsection("2. Fork the Mirror Repository", [
       p(class="text-slate-600 mb-2", [
-        text("Create a directory structure for your mirror:"),
-      ]),
-      code_block("mkdir -p my-mirror\ncd my-mirror\ngit init"),
-    ]),
-    subsection("Sync Packages", [
-      p(class="text-slate-600 mb-2", [
-        text("Run the sync command to download packages from mooncakes.io:"),
-      ]),
-      code_block("moonbit-registry-tools sync --output ./registry"),
-      p(class="text-slate-600 mb-2", [
-        text("This will download all package metadata and create the registry index."),
+        text("Fork "),
+        a(href="https://github.com/moonrockz/mooncakes-mirror", class="text-indigo-600 hover:underline", [text("mooncakes-mirror")]),
+        text(". In its workflows, replace moonrockz/mooncakes-index with your index repository."),
       ]),
     ]),
-    subsection("Generate Index Files", [
-      p(class="text-slate-600 mb-2", [
-        text("Build the registry index for the Moon CLI to consume:"),
+    subsection("3. Add a Deploy Key", [
+      ol(class="list-decimal list-inside text-slate-600 space-y-2 mb-4", [
+        li([text("Make an SSH key pair: ssh-keygen -t ed25519 -f deploy_key -N \"\"")]),
+        li([text("Add deploy_key.pub to the index repository as a deploy key with write access")]),
+        li([text("Add deploy_key to the fork as the Actions secret MOONCAKES_INDEX_DEPLOY_KEY")]),
       ]),
-      code_block("moonbit-registry-tools index --input ./registry --output ./public"),
     ]),
-    subsection("Deploy", [
+    subsection("4. Enable GitHub Actions and Pages", [
       p(class="text-slate-600 mb-2", [
-        text("Deploy the contents of the public directory to any static file host (GitHub Pages, Netlify, Vercel, nginx, etc.)."),
+        text("The mirror workflow updates the index every day at 2 AM UTC. For the statistics website, go to Settings, then Pages, and select \"GitHub Actions\" as the source."),
       ]),
     ]),
   ])
@@ -198,17 +201,12 @@ fn manual_setup_section() -> @html.Html[Msg] {
 ///|
 /// Automation section
 fn automation_section() -> @html.Html[Msg] {
-  section("fa-solid fa-clock-rotate-left", "Automating Updates", [
+  section("fa-solid fa-clock-rotate-left", "Keeping the Mirror Up to Date", [
     p(class="text-slate-600 mb-4", [
-      text("To keep your mirror in sync with mooncakes.io, set up automated syncing."),
+      text("With moonbit-registry-tools, run the mirror command on a schedule on your server, for example with cron:"),
     ]),
-    subsection("GitHub Actions Example", [
-      p(class="text-slate-600 mb-2", [
-        text("Create a workflow file at .github/workflows/sync.yml:"),
-      ]),
-      code_block("name: Sync Registry\n\non:\n  schedule:\n    - cron: '0 2 * * *'  # Daily at 2 AM UTC\n  workflow_dispatch:  # Manual trigger\n\njobs:\n  sync:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Setup moonbit\n        uses: moonbitlang/setup-moonbit@v1\n      - name: Sync packages\n        run: |\n          moon run moonrockz/moonbit-registry-tools -- sync\n      - name: Deploy to GitHub Pages\n        uses: peaceiris/actions-gh-pages@v3\n        with:\n          github_token: ${{ secrets.GITHUB_TOKEN }}\n          publish_dir: ./public"),
-    ]),
-    warning_callout("Syncing all packages can take significant time and storage. Consider syncing only the packages your organization needs for a more efficient mirror."),
+    code_block("0 2 * * * cd /srv/my-registry && moonbit-registry mirror \"moonbitlang/*\""),
+    warning_callout("Mirroring all packages can take significant time and storage. Consider mirroring only the packages your organization needs."),
   ])
 }
 
@@ -217,33 +215,37 @@ fn automation_section() -> @html.Html[Msg] {
 fn configuration_section() -> @html.Html[Msg] {
   section("fa-solid fa-sliders", "Configuration Options", [
     p(class="text-slate-600 mb-4", [
-      text("The registry tools support various configuration options:"),
+      text("Some useful options of moonbit-registry-tools:"),
     ]),
     div(class="overflow-x-auto", [
       div(class="bg-slate-50 rounded-lg p-4 mb-4", [
         div(class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm", [
           div([
-            div(class="font-medium text-slate-700", [text("--packages")]),
-            div(class="text-slate-500", [text("Sync only specific packages")]),
+            div(class="font-medium text-slate-700", [text("mirror --full")]),
+            div(class="text-slate-500", [text("Mirror the entire registry")]),
           ]),
           div([
-            div(class="font-medium text-slate-700", [text("--exclude-yanked")]),
-            div(class="text-slate-500", [text("Skip yanked package versions")]),
+            div(class="font-medium text-slate-700", [text("mirror --strict")]),
+            div(class="text-slate-500", [text("Mirror only exact pattern matches (no dependencies)")]),
           ]),
           div([
-            div(class="font-medium text-slate-700", [text("--since")]),
-            div(class="text-slate-500", [text("Sync packages updated after date")]),
+            div(class="font-medium text-slate-700", [text("serve --host / --port")]),
+            div(class="text-slate-500", [text("Address of the registry server")]),
           ]),
           div([
-            div(class="font-medium text-slate-700", [text("--concurrency")]),
-            div(class="text-slate-500", [text("Number of parallel downloads")]),
+            div(class="font-medium text-slate-700", [text("[server.smart_http]")]),
+            div(class="text-slate-500", [text("Git smart HTTP for the index (on by default; current moon needs it)")]),
+          ]),
+          div([
+            div(class="font-medium text-slate-700", [text("git.branch = \"main\"")]),
+            div(class="text-slate-500", [text("moon fetches only the main branch of the index")]),
           ]),
         ]),
       ]),
     ]),
     p(class="text-slate-600 mb-2", [
       text("See the "),
-      a(href="https://github.com/moonrockz/moonbit-registry-tools#configuration", class="text-indigo-600 hover:underline", [text("full documentation")]),
+      a(href="https://github.com/moonrockz/moonbit-registry-tools#usage", class="text-indigo-600 hover:underline", [text("full documentation")]),
       text(" for all available options."),
     ]),
   ])
@@ -288,8 +290,9 @@ pub fn view(_model : Model) -> @html.Html[Msg] {
     // Content
     overview_section(),
     prerequisites_section(),
-    quickstart_section(),
-    manual_setup_section(),
+    client_config_section(),
+    registry_tools_setup_section(),
+    github_index_section(),
     automation_section(),
     configuration_section(),
     resources_section(),

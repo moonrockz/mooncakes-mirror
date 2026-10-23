@@ -144,7 +144,7 @@ fn packages_info() -> @html.Html[Msg] {
   div(class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-6", [
     p(class="text-sm text-indigo-800", [
       text("This page shows yanked and deprecated packages. The full package index is available via the "),
-      a(href="/mooncakes-mirror/git/index", class="text-indigo-600 hover:underline font-medium", [text("Git index")]),
+      a(href="https://github.com/moonrockz/mooncakes-index", class="text-indigo-600 hover:underline font-medium", [text("Git index")]),
       text(". You can also browse packages on "),
       a(href="https://mooncakes.io", class="text-indigo-600 hover:underline font-medium", [text("mooncakes.io")]),
       text("."),

@@ -38,10 +38,21 @@ Shows the current mirror status including:
 
 ### Quick Start
 
-Instructions for using the mirror:
+Instructions for using the mirror. Write `$MOON_HOME/config.json`
+(default `~/.moon/config.json`):
+
+```json
+{
+  "api": "https://mooncakes.io",
+  "index": "https://github.com/moonrockz/mooncakes-index.git",
+  "download": "https://download.mooncakes.io"
+}
+```
+
+Then, with `MOONCAKES_REGISTRY` not set:
 
 ```bash
-export MOONCAKES_REGISTRY=https://moonrockz.github.io/mooncakes-mirror
+moon update
 moon new my-project
 cd my-project
 moon add moonbitlang/core
@@ -53,7 +64,7 @@ moon build
 Grid of feature cards:
 - Daily Sync - Automatic synchronization at 2 AM UTC
 - Full Index - Complete package metadata and checksums
-- Git Protocol - Compatible with Git dumb HTTP protocol
+- Smart HTTP Index - Index served over Git smart HTTP from moonrockz/mooncakes-index
 - Open Source - Community-driven mirror solution
 
 ### Resources
