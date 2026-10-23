@@ -38,6 +38,22 @@ Only the index is mirrored. Package archives still come from `download.mooncakes
 > protocol, so `moon update` fails with *"dumb http transport does not support shallow
 > capabilities"*. The `/git/index` copy on the website is kept only for older `moon` releases.
 
+## Use it through a caching proxy
+
+[moonbit-registry-tools](https://github.com/moonrockz/moonbit-registry-tools) can run a caching
+proxy that uses this index (`source add moonrockz --from-preset moonrockz`). The proxy caches
+each package zip on the first request, so builds continue when download.mooncakes.io is not
+available. With the archive manifests of this index, the proxy can also rebuild a zip from the
+GitHub tag of its version. It serves the rebuild only when it is byte-identical to the
+published zip.
+
+Recipes:
+
+- [Personal Proxy](https://moonrockz.github.io/moonbit-registry-tools/recipes/proxy-personal): a proxy on your computer for offline work
+- [Team Proxy](https://moonrockz.github.io/moonbit-registry-tools/recipes/proxy-team): one shared cache for a team
+- [Corporate Network](https://moonrockz.github.io/moonbit-registry-tools/recipes/proxy-corporate): mooncakes.io blocked, egress proxy, or no internet
+- [mooncakes.io Outage](https://moonrockz.github.io/moonbit-registry-tools/recipes/proxy-outage): build from this index and GitHub when mooncakes.io is down
+
 ## How it works
 
 1. **Daily Mirroring**: The `mirror.yml` workflow runs every day at 02:00 UTC (or manually). It merges the upstream index from `https://mooncakes.io/git/index`, writes `stats.json` and `yanked.json`, and pushes to the `main` branch of [moonrockz/mooncakes-index](https://github.com/moonrockz/mooncakes-index) with a deploy key (repository secret `MOONCAKES_INDEX_DEPLOY_KEY`)
