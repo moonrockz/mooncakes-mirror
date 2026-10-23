@@ -12,9 +12,10 @@ This repository is an automated mirror of the mooncakes.io registry index. GitHu
 2. **Index serving**: GitHub serves `mooncakes-index` over Git smart HTTP. Current `moon` needs this, because it shallow-clones the `main` branch
 3. **Pages workflow**: The `.github/workflows/pages.yml` workflow starts when the mirror workflow completes successfully, or when you start it manually. It builds the statistics website with Vite and `@rabbita/vite` from `main` of this repository. It copies `stats.json` and `yanked.json` from `mooncakes-index`. It also keeps a legacy `/git/index` copy that uses the dumb HTTP protocol. This copy works only with `moon` releases from before 2026-08
 4. **E2E workflow**: The `.github/workflows/e2e.yml` workflow starts when the Pages workflow completes successfully, or when you start it manually. It writes `$MOON_HOME/config.json` with the index URL, runs `moon update`, builds and runs `examples/hello-world`, and adds a package from the index
-5. **Package storage**: The mirror does NOT store package `.zip` files. `moon` downloads them from `https://download.mooncakes.io`
+5. **Manifests workflow**: The `.github/workflows/manifests.yml` workflow starts when the mirror workflow completes successfully, or when you start it manually. It adds archive manifests for new versions to `mooncakes-index` (see [Archive Manifests](#archive-manifests))
+6. **Package storage**: The mirror does NOT store package `.zip` files. `moon` downloads them from `https://download.mooncakes.io`
 
-The workflows use only Git, shell commands, the MoonBit toolchain and Node.js. They do not install or use [moonbit-registry-tools](https://github.com/moonrockz/moonbit-registry-tools).
+The mirror, Pages and E2E workflows use only Git, shell commands, the MoonBit toolchain and Node.js. Only the manifests workflow uses [moonbit-registry-tools](https://github.com/moonrockz/moonbit-registry-tools). It runs the CLI from source with Bun.
 
 ## Manual Operations
 
@@ -142,7 +143,7 @@ The mirror workflow pushes to `moonrockz/mooncakes-index` with an SSH deploy key
 - The private key is the Actions secret `MOONCAKES_INDEX_DEPLOY_KEY` in `moonrockz/mooncakes-mirror`.
 - The public key is a deploy key with write access on `moonrockz/mooncakes-index`.
 
-Only the mirror workflow uses this secret. The Pages workflow reads the public `mooncakes-index` repository without a secret.
+Only the mirror and manifests workflows use this secret. The Pages workflow reads the public `mooncakes-index` repository without a secret.
 
 If the secret is missing, or if the key is not a deploy key with write access, the mirror job fails and the index does not update. A key that GitHub does not accept fails at the "Checkout mooncakes-index" step. Without the secret, `actions/checkout` uses the default token, which can read the public repository but cannot push to it, so the "Commit and push" step fails. The Pages and E2E workflows do not start after a failed mirror run.
 
@@ -153,6 +154,68 @@ To replace the key:
 3. In `moonrockz/mooncakes-mirror`, go to Settings, then Secrets and variables, then Actions. Set `MOONCAKES_INDEX_DEPLOY_KEY` to the contents of `deploy_key`.
 4. Delete the local `deploy_key` and `deploy_key.pub` files.
 5. Start the mirror workflow manually and make sure that it passes.
+
+## Archive Manifests
+
+### Purpose
+
+An archive manifest records what a published package zip contains. There is one JSON line per version, in `manifests/user/<owner>/<pkg>.manifest` in `moonrockz/mooncakes-index`. Each line has the module name, the version, the checksum of the zip (the same as in the index), a content digest, and the entries in archive order with the SHA-256 and size of each entry.
+
+The proxy of [moonbit-registry-tools](https://github.com/moonrockz/moonbit-registry-tools) uses these lines when `download.mooncakes.io` is not available. It rebuilds the zip from the GitHub source of the package and puts the entries in the published order. It serves the rebuilt zip only if its SHA-256 is equal to the index checksum. Without a manifest line, the proxy cannot do this check for that version.
+
+`moon` reads only `user/<owner>/<pkg>.index`. It ignores `manifests/`. A local test with `moon update` and `moon add moonbitlang/x` against an index with `manifests/` passed.
+
+### Workflow
+
+The `.github/workflows/manifests.yml` workflow does these steps:
+
+1. It checks out `moonrockz/mooncakes-index` with the deploy key, and `moonrockz/moonbit-registry-tools` at the ref in `REGISTRY_TOOLS_REF`.
+2. It installs the Bun version from the `mise.toml` file of `moonbit-registry-tools`, and runs `bun install --frozen-lockfile`.
+3. It writes a temporary `registry.toml` whose default source reads the index checkout and downloads from `https://download.mooncakes.io`.
+4. It runs `moonbit-registry manifest build --index <checkout> --limit <n> --concurrency 8`. For each version without a line, the command downloads the zip, compares its SHA-256 with the index checksum, and writes the line. The zip stays in memory only. Nothing is cached on disk.
+5. It commits only `manifests/` ("Add archive manifests: N versions"). Then it rebases on `origin/main` and pushes to `main`. If the push fails, it tries one more time.
+6. It writes a summary: versions added, versions already present, failures, and versions still missing.
+
+The workflow uses the concurrency group `mirror`, the same as the mirror workflow. Thus the two workflows never push at the same time. GitHub keeps at most one waiting run in a group: if a second run starts to wait, GitHub cancels the first waiting run. The command writes each line to disk immediately, and a later run adds only the lines that are missing. Thus you can stop a run, and you can run it again at any time.
+
+To use a different version of `moonbit-registry-tools`, change `REGISTRY_TOOLS_REF` in the workflow file.
+
+### Run a Backfill Manually
+
+1. Go to [Actions → Archive Manifests](https://github.com/moonrockz/mooncakes-mirror/actions/workflows/manifests.yml)
+2. Click "Run workflow"
+3. Optional: set `limit` (default `10000`), the largest number of versions to add in this run
+4. Optional: set `packages` to only do the packages that match one or more globs, separated by spaces (for example `moonbitlang/*`)
+5. Click "Run workflow" again
+
+Run it again until the summary shows 0 versions still missing. The daily run after the mirror workflow also continues the backfill, with the default limit.
+
+To run the same command locally:
+
+```bash
+git clone https://github.com/moonrockz/mooncakes-index.git
+git clone https://github.com/moonrockz/moonbit-registry-tools.git
+cd moonbit-registry-tools
+bun install --frozen-lockfile
+bun run src/index.ts manifest build --index ../mooncakes-index --limit 200 --concurrency 8
+```
+
+Without `--dir`, the command uses the default source of the registry in the current directory (`https://download.mooncakes.io` if there is no `registry.toml`).
+
+### How Long the Backfill Takes
+
+The index has about 19500 versions. Their zips are about 16 GB in total (mean 881 KB, largest about 24 MB). A local test added about 14 versions per second (about 19 MB/s) with `--concurrency 8`. At this rate, a run with the default limit of 10000 takes about 12 minutes, and the full backfill takes two runs. A slower network on the runner makes a run longer. The build step stops after 75 minutes. The lines written before the stop are still committed, and the next run continues.
+
+After the backfill, the daily run adds only the new versions of that day, so it is short.
+
+### Failures
+
+A failure is a version that got no line in this run. The summary lists each failed version with the cause. The next run tries it again. The run still commits the other lines, and it shows a warning, not an error.
+
+- **Download error** (for example a 404, or a timeout): the zip was not available from `download.mooncakes.io`. A temporary error goes away in a later run. A version that always fails with 404 is not available upstream. The proxy cannot check a rebuild for that version.
+- **Checksum mismatch**: the zip from `download.mooncakes.io` is not the zip that the index records. Do not add a line by hand. Report the version upstream.
+
+The job fails when the build stops before the end, or when the push fails two times. If the push fails, make sure that the deploy key has write access (see [Deploy Key](#deploy-key)).
 
 ## Configuration
 
