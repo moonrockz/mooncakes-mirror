@@ -56,6 +56,8 @@ jobs:
       - name: Setup MoonBit
         uses: chawyehsu/setup-moonup@8b0340aa45016c02c776cbe42a7856b371e610bf # v1
         with:
+          # Installs the toolchain. The moon shim selects it from the moonbit-version
+          # file in the repo root (without that file it uses latest). Keep both the same.
           moonbit-version: '0.10.15+943464bfa'
 
       - name: Setup Node.js
