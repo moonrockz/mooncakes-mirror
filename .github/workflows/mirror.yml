@@ -1,6 +1,10 @@
 name: Mirror Mooncakes Registry
 
 on:
+  # Run daily at 2 AM UTC
+  schedule:
+    - cron: '0 2 * * *'
+
   # Allow manual trigger
   workflow_dispatch:
 
@@ -9,8 +13,15 @@ concurrency:
   group: mirror
   cancel-in-progress: false
 
+# The index lives in moonrockz/mooncakes-index (branch main). This job pushes
+# there with an SSH deploy key, so it does not write to this repository.
+#
+# Current moon clones the index with "git clone --depth 1" and updates it
+# with "git fetch --depth=1 ... refs/heads/main". That needs the Git smart
+# HTTP protocol and a branch named main. GitHub repositories have both;
+# GitHub Pages does not.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   mirror:
@@ -18,10 +29,14 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Checkout registry-index branch
+      # MOONCAKES_INDEX_DEPLOY_KEY is the private half of a deploy key with
+      # write access to moonrockz/mooncakes-index.
+      - name: Checkout mooncakes-index
         uses: actions/checkout@v4
         with:
-          ref: registry-index
+          repository: moonrockz/mooncakes-index
+          ref: main
+          ssh-key: ${{ secrets.MOONCAKES_INDEX_DEPLOY_KEY }}
           fetch-depth: 0
 
       - name: Configure Git
@@ -94,15 +109,16 @@ jobs:
             "totalOwners": $TOTAL_OWNERS,
             "yankedCount": $YANKED_COUNT,
             "source": "mooncakes.io",
-            "mirrorUrl": "https://moonrockz.github.io/mooncakes-mirror"
+            "mirrorUrl": "https://moonrockz.github.io/mooncakes-mirror",
+            "indexUrl": "https://github.com/moonrockz/mooncakes-index.git"
           }
           STATSEOF
 
           echo "Registry Statistics:"
           cat stats.json
 
-          echo "packages=$TOTAL_PACKAGES" >> $GITHUB_OUTPUT
-          echo "owners=$TOTAL_OWNERS" >> $GITHUB_OUTPUT
+          echo "packages=$TOTAL_PACKAGES" >> "$GITHUB_OUTPUT"
+          echo "owners=$TOTAL_OWNERS" >> "$GITHUB_OUTPUT"
 
       - name: Commit and push
         run: |
@@ -111,14 +127,16 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Mirror update - ${{ steps.stats.outputs.packages }} packages, ${{ steps.stats.outputs.owners }} publishers"
-            git push origin registry-index
-            echo "Pushed to registry-index branch"
+            git push origin HEAD:main
+            echo "Pushed to mooncakes-index main"
           fi
 
       - name: Summary
         run: |
-          echo "## Mirror Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Packages**: ${{ steps.stats.outputs.packages }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Publishers**: ${{ steps.stats.outputs.owners }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch**: \`registry-index\`" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Mirror Summary"
+            echo ""
+            echo "- **Packages**: ${{ steps.stats.outputs.packages }}"
+            echo "- **Publishers**: ${{ steps.stats.outputs.owners }}"
+            echo "- **Index**: \`moonrockz/mooncakes-index\` (branch \`main\`)"
+          } >> "$GITHUB_STEP_SUMMARY"
